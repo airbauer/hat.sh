@@ -20,6 +20,18 @@
 # misc
 .DS_Store
 *.pem
+*.swp
+.eslintcache
+.prettier-cache
+.idea/
+.vscode/
+Thumbs.db
+
+# lockfiles (prefer single source of truth on CI)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+shrinkwrap.yaml
 
 # debug
 npm-debug.log*
@@ -31,6 +43,21 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.env
 
 # vercel
 .vercel
+
+# Cypress artifacts
+cypress/downloads/
+cypress/screenshots/
+cypress/videos/
+
+# OS / misc logs
+*.log
+logs
+*.tgz
+
+# Next.js build artifacts (already covered but keep for completeness)
+.next/
+out/
