@@ -9,6 +9,8 @@
 
 </div>
 
+![Static Badge](https://img.shields.io/badge/Client--Side%20Encryption-Yes-green) ![Static Badge](https://img.shields.io/badge/Privacy-Focused-brightgreen) ![Static Badge](https://img.shields.io/badge/Security-High-red) ![Static Badge](https://img.shields.io/badge/Language-JavaScript-yellow) ![Static Badge](https://img.shields.io/badge/License-MIT-important) ![Static Badge](https://img.shields.io/badge/Offline%20Support-Yes-lightgrey)
+
 ---
 
 [Hat.sh](https://hat.vik.lol) is a web app that provides secure local file encryption in the browser. It's fast, secure, and uses modern cryptographic algorithms with chunked AEAD stream encryption/decryption.
