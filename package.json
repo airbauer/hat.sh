@@ -8,6 +8,9 @@
     "postbuild": "node ./post-build.js",
     "start": "next start -p 3991",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "cypress open"
   },
   "dependencies": {
@@ -26,8 +29,10 @@
   },
   "devDependencies": {
     "browserify": "^17.0.0",
-    "eslint": "8.15.0",
-    "eslint-config-next": "^15.4.5"
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^15.4.5",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.3.3"
   },
   "overrides": {
     "react": "^18.2.0",

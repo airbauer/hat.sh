@@ -1,15 +1,11 @@
-self.addEventListener("install", (event) =>
-  event.waitUntil(self.skipWaiting())
-);
-self.addEventListener("activate", (event) =>
-  event.waitUntil(self.clients.claim())
-);
+self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting()));
+self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
 
-const config = require("./config");
+const config = require('./config');
 
 let streamController, fileName, theKey, state, header, salt, encRx, encTx, decRx, decTx;
 
-self.addEventListener("fetch", (e) => {
+self.addEventListener('fetch', (e) => {
   // console.log(e); // log fetch event
   if (e.request.url.startsWith(config.APP_URL)) {
     const stream = new ReadableStream({
@@ -18,94 +14,85 @@ self.addEventListener("fetch", (e) => {
       },
     });
     const response = new Response(stream);
-    response.headers.append(
-      "Content-Disposition",
-      'attachment; filename="' + fileName + '"'
-    );
+    response.headers.append('Content-Disposition', 'attachment; filename="' + fileName + '"');
     e.respondWith(response);
   }
 });
 
-const _sodium = require("libsodium-wrappers");
+const _sodium = require('libsodium-wrappers');
 (async () => {
   await _sodium.ready;
   const sodium = _sodium;
 
-  addEventListener("message", (e) => {
+  addEventListener('message', (e) => {
     switch (e.data.cmd) {
-      case "prepareFileNameEnc":
+      case 'prepareFileNameEnc':
         assignFileNameEnc(e.data.fileName, e.source);
         break;
 
-      case "prepareFileNameDec":
+      case 'prepareFileNameDec':
         assignFileNameDec(e.data.fileName, e.source);
         break;
 
-      case "requestEncryption":
+      case 'requestEncryption':
         encKeyGenerator(e.data.password, e.source);
         break;
 
-      case "requestEncKeyPair":
+      case 'requestEncKeyPair':
         encKeyPair(e.data.privateKey, e.data.publicKey, e.data.mode, e.source);
         break;
 
-      case "asymmetricEncryptFirstChunk":
+      case 'asymmetricEncryptFirstChunk':
         asymmetricEncryptFirstChunk(e.data.chunk, e.data.last, e.source);
         break;
 
-      case "encryptFirstChunk":
+      case 'encryptFirstChunk':
         encryptFirstChunk(e.data.chunk, e.data.last, e.source);
         break;
 
-      case "encryptRestOfChunks":
+      case 'encryptRestOfChunks':
         encryptRestOfChunks(e.data.chunk, e.data.last, e.source);
         break;
 
-      case "checkFile":
+      case 'checkFile':
         checkFile(e.data.signature, e.data.legacy, e.source);
         break;
 
-      case "requestTestDecryption":
+      case 'requestTestDecryption':
         testDecryption(
           e.data.password,
           e.data.signature,
           e.data.salt,
           e.data.header,
           e.data.decFileBuff,
-          e.source
+          e.source,
         );
         break;
 
-      case "requestDecKeyPair":
+      case 'requestDecKeyPair':
         requestDecKeyPair(
           e.data.privateKey,
           e.data.publicKey,
           e.data.header,
           e.data.decFileBuff,
           e.data.mode,
-          e.source
+          e.source,
         );
         break;
 
-      case "requestDecryption":
-        decKeyGenerator(
-          e.data.password,
-          e.data.signature,
-          e.data.salt,
-          e.data.header,
-          e.source
-        );
+      case 'requestDecryption':
+        decKeyGenerator(e.data.password, e.data.signature, e.data.salt, e.data.header, e.source);
         break;
 
-      case "decryptFirstChunk":
+      case 'decryptFirstChunk':
         decryptChunks(e.data.chunk, e.data.last, e.source);
         break;
 
-      case "decryptRestOfChunks":
+      case 'decryptRestOfChunks':
         decryptChunks(e.data.chunk, e.data.last, e.source);
         break;
 
-      case "pingSW":
+      case 'pingSW':
         // console.log("SW running");
         break;
     }
@@ -113,74 +100,71 @@ const _sodium = require("libsodium-wrappers");
 
   const assignFileNameEnc = (name, client) => {
     fileName = name;
-    client.postMessage({ reply: "filePreparedEnc" })
-  }
+    client.postMessage({ reply: 'filePreparedEnc' });
+  };
 
   const assignFileNameDec = (name, client) => {
     fileName = name;
-    client.postMessage({ reply: "filePreparedDec" })
-  }
+    client.postMessage({ reply: 'filePreparedDec' });
+  };
 
   const encKeyPair = (csk, spk, mode, client) => {
     try {
       if (csk === spk) {
-        client.postMessage({ reply: "wrongKeyPair" });
+        client.postMessage({ reply: 'wrongKeyPair' });
         return;
       }
 
       let computed = sodium.crypto_scalarmult_base(sodium.from_base64(csk));
       computed = sodium.to_base64(computed);
       if (spk === computed) {
-        client.postMessage({ reply: "wrongKeyPair" });
+        client.postMessage({ reply: 'wrongKeyPair' });
         return;
       }
 
       if (sodium.from_base64(csk).length !== sodium.crypto_kx_SECRETKEYBYTES) {
-        client.postMessage({ reply: "wrongPrivateKey" });
+        client.postMessage({ reply: 'wrongPrivateKey' });
         return;
       }
 
       if (sodium.from_base64(spk).length !== sodium.crypto_kx_PUBLICKEYBYTES) {
-        client.postMessage({ reply: "wrongPublicKey" });
+        client.postMessage({ reply: 'wrongPublicKey' });
         return;
       }
 
       let key = sodium.crypto_kx_client_session_keys(
         sodium.crypto_scalarmult_base(sodium.from_base64(csk)),
         sodium.from_base64(csk),
-        sodium.from_base64(spk)
+        sodium.from_base64(spk),
       );
 
       if (key) {
         [encRx, encTx] = [key.sharedRx, key.sharedTx];
 
-        if (mode === "test" && encRx && encTx) {
-          client.postMessage({ reply: "goodKeyPair" });
+        if (mode === 'test' && encRx && encTx) {
+          client.postMessage({ reply: 'goodKeyPair' });
         }
 
-        if (mode === "derive" && encRx && encTx) {
-          let res =
-            sodium.crypto_secretstream_xchacha20poly1305_init_push(encTx);
+        if (mode === 'derive' && encRx && encTx) {
+          let res = sodium.crypto_secretstream_xchacha20poly1305_init_push(encTx);
           state = res.state;
           header = res.header;
-          client.postMessage({ reply: "keyPairReady" });
+          client.postMessage({ reply: 'keyPairReady' });
         }
       } else {
-        client.postMessage({ reply: "wrongKeyPair" });
+        client.postMessage({ reply: 'wrongKeyPair' });
       }
     } catch (error) {
-      client.postMessage({ reply: "wrongKeyInput" });
+      client.postMessage({ reply: 'wrongKeyInput' });
     }
   };
 
   const asymmetricEncryptFirstChunk = (chunk, last, client) => {
     setTimeout(function () {
       if (!streamController) {
-        console.log("stream does not exist");
+        console.log('stream does not exist');
       }
-      const SIGNATURE = new Uint8Array(
-        config.encoder.encode(config.sigCodes["v2_asymmetric"])
-      );
+      const SIGNATURE = new Uint8Array(config.encoder.encode(config.sigCodes['v2_asymmetric']));
 
       streamController.enqueue(SIGNATURE);
       streamController.enqueue(header);
@@ -193,18 +177,18 @@ const _sodium = require("libsodium-wrappers");
         state,
         new Uint8Array(chunk),
         null,
-        tag
+        tag,
       );
 
       streamController.enqueue(new Uint8Array(encryptedChunk));
 
       if (last) {
         streamController.close();
-        client.postMessage({ reply: "encryptionFinished" });
+        client.postMessage({ reply: 'encryptionFinished' });
       }
 
       if (!last) {
-        client.postMessage({ reply: "continueEncryption" });
+        client.postMessage({ reply: 'continueEncryption' });
       }
     }, 500);
   };
@@ -212,29 +196,30 @@ const _sodium = require("libsodium-wrappers");
   let encKeyGenerator = (password, client) => {
     // Use enhanced salt generation
     salt = sodium.randombytes_buf(sodium.crypto_pwhash_SALTBYTES);
-    
+
     // Add additional entropy for enhanced security
     const additionalEntropy = new Uint8Array([
       ...config.encoder.encode(navigator.userAgent || ''),
       ...config.encoder.encode(navigator.platform || ''),
-      ...new Uint8Array(new ArrayBuffer(8)).map(() => Math.floor(Math.random() * 256))
+      ...new Uint8Array(new ArrayBuffer(8)).map(() => Math.floor(Math.random() * 256)),
     ]);
-    
+
     const combinedSalt = new Uint8Array([...salt, ...additionalEntropy]);
-    const enhancedSalt = sodium.crypto_generichash(
-      sodium.crypto_pwhash_SALTBYTES,
-      combinedSalt
-    );
+    const enhancedSalt = sodium.crypto_generichash(sodium.crypto_pwhash_SALTBYTES, combinedSalt);
 
     // Adaptive security parameters with fallback
     let opsLimit = sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE;
     let memLimit = sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE;
-    
+
     // Check if we can use stronger parameters
-    if (typeof navigator !== 'undefined' && navigator.deviceMemory && navigator.hardwareConcurrency) {
+    if (
+      typeof navigator !== 'undefined' &&
+      navigator.deviceMemory &&
+      navigator.hardwareConcurrency
+    ) {
       const memory = navigator.deviceMemory || 4;
       const cores = navigator.hardwareConcurrency || 4;
-      
+
       // Use MODERATE parameters for high-end devices
       if (memory >= 8 && cores >= 8) {
         opsLimit = sodium.crypto_pwhash_OPSLIMIT_MODERATE;
@@ -248,23 +233,21 @@ const _sodium = require("libsodium-wrappers");
       enhancedSalt,
       opsLimit,
       memLimit,
-      sodium.crypto_pwhash_ALG_ARGON2ID13
+      sodium.crypto_pwhash_ALG_ARGON2ID13,
     );
 
     let res = sodium.crypto_secretstream_xchacha20poly1305_init_push(theKey);
     state = res.state;
     header = res.header;
 
-    client.postMessage({ reply: "keysGenerated" });
+    client.postMessage({ reply: 'keysGenerated' });
   };
 
   const encryptFirstChunk = (chunk, last, client) => {
     if (!streamController) {
-      console.log("stream does not exist");
+      console.log('stream does not exist');
     }
-    const SIGNATURE = new Uint8Array(
-      config.encoder.encode(config.sigCodes["v2_symmetric"])
-    );
+    const SIGNATURE = new Uint8Array(config.encoder.encode(config.sigCodes['v2_symmetric']));
 
     streamController.enqueue(SIGNATURE);
     streamController.enqueue(salt);
@@ -278,18 +261,18 @@ const _sodium = require("libsodium-wrappers");
       state,
       new Uint8Array(chunk),
       null,
-      tag
+      tag,
     );
 
     streamController.enqueue(new Uint8Array(encryptedChunk));
 
     if (last) {
       streamController.close();
-      client.postMessage({ reply: "encryptionFinished" });
+      client.postMessage({ reply: 'encryptionFinished' });
     }
 
     if (!last) {
-      client.postMessage({ reply: "continueEncryption" });
+      client.postMessage({ reply: 'continueEncryption' });
     }
   };
 
@@ -302,126 +285,120 @@ const _sodium = require("libsodium-wrappers");
       state,
       new Uint8Array(chunk),
       null,
-      tag
+      tag,
     );
 
     streamController.enqueue(encryptedChunk);
 
     if (last) {
       streamController.close();
-      client.postMessage({ reply: "encryptionFinished" });
+      client.postMessage({ reply: 'encryptionFinished' });
     }
 
     if (!last) {
-      client.postMessage({ reply: "continueEncryption" });
+      client.postMessage({ reply: 'continueEncryption' });
     }
   };
 
   const checkFile = (signature, legacy, client) => {
-    if (config.decoder.decode(signature) === config.sigCodes["v2_symmetric"]) {
-      client.postMessage({ reply: "secretKeyEncryption" });
-    } else if (
-      config.decoder.decode(signature) === config.sigCodes["v2_asymmetric"]
-    ) {
-      client.postMessage({ reply: "publicKeyEncryption" });
-    } else if (config.decoder.decode(legacy) === config.sigCodes["v1"]) {
-      client.postMessage({ reply: "oldVersion" });
+    if (config.decoder.decode(signature) === config.sigCodes['v2_symmetric']) {
+      client.postMessage({ reply: 'secretKeyEncryption' });
+    } else if (config.decoder.decode(signature) === config.sigCodes['v2_asymmetric']) {
+      client.postMessage({ reply: 'publicKeyEncryption' });
+    } else if (config.decoder.decode(legacy) === config.sigCodes['v1']) {
+      client.postMessage({ reply: 'oldVersion' });
     } else {
-      client.postMessage({ reply: "badFile" });
+      client.postMessage({ reply: 'badFile' });
     }
   };
 
   const requestDecKeyPair = (ssk, cpk, header, decFileBuff, mode, client) => {
     try {
       if (ssk === cpk) {
-        client.postMessage({ reply: "wrongDecKeyPair" });
+        client.postMessage({ reply: 'wrongDecKeyPair' });
         return;
       }
 
       let computed = sodium.crypto_scalarmult_base(sodium.from_base64(ssk));
       computed = sodium.to_base64(computed);
       if (cpk === computed) {
-        client.postMessage({ reply: "wrongDecKeyPair" });
+        client.postMessage({ reply: 'wrongDecKeyPair' });
         return;
       }
 
       if (sodium.from_base64(ssk).length !== sodium.crypto_kx_SECRETKEYBYTES) {
-        client.postMessage({ reply: "wrongDecPrivateKey" });
+        client.postMessage({ reply: 'wrongDecPrivateKey' });
         return;
       }
 
       if (sodium.from_base64(cpk).length !== sodium.crypto_kx_PUBLICKEYBYTES) {
-        client.postMessage({ reply: "wrongDecPublicKey" });
+        client.postMessage({ reply: 'wrongDecPublicKey' });
         return;
       }
 
       let key = sodium.crypto_kx_server_session_keys(
         sodium.crypto_scalarmult_base(sodium.from_base64(ssk)),
         sodium.from_base64(ssk),
-        sodium.from_base64(cpk)
+        sodium.from_base64(cpk),
       );
 
       if (key) {
         [decRx, decTx] = [key.sharedRx, key.sharedTx];
 
-        if (mode === "test" && decRx && decTx) {
+        if (mode === 'test' && decRx && decTx) {
           let state_in = sodium.crypto_secretstream_xchacha20poly1305_init_pull(
             new Uint8Array(header),
-            decRx
+            decRx,
           );
 
           if (state_in) {
-            let decTestresults =
-              sodium.crypto_secretstream_xchacha20poly1305_pull(
-                state_in,
-                new Uint8Array(decFileBuff)
-              );
+            let decTestresults = sodium.crypto_secretstream_xchacha20poly1305_pull(
+              state_in,
+              new Uint8Array(decFileBuff),
+            );
 
             if (decTestresults) {
-              client.postMessage({ reply: "readyToDecrypt" });
+              client.postMessage({ reply: 'readyToDecrypt' });
             } else {
-              client.postMessage({ reply: "wrongDecKeys" });
+              client.postMessage({ reply: 'wrongDecKeys' });
             }
           }
         }
 
-        if (mode === "derive" && decRx && decTx) {
+        if (mode === 'derive' && decRx && decTx) {
           state = sodium.crypto_secretstream_xchacha20poly1305_init_pull(
             new Uint8Array(header),
-            decRx
+            decRx,
           );
 
           if (state) {
-            client.postMessage({ reply: "decKeyPairGenerated" });
+            client.postMessage({ reply: 'decKeyPairGenerated' });
           }
         }
       }
     } catch (error) {
-      client.postMessage({ reply: "wrongDecKeyInput" });
+      client.postMessage({ reply: 'wrongDecKeyInput' });
     }
   };
 
-  const testDecryption = (
-    password,
-    signature,
-    salt,
-    header,
-    decFileBuff,
-    client
-  ) => {
-    if (config.decoder.decode(signature) === config.sigCodes["v2_symmetric"]) {
+  const testDecryption = (password, signature, salt, header, decFileBuff, client) => {
+    if (config.decoder.decode(signature) === config.sigCodes['v2_symmetric']) {
       let decTestsalt = new Uint8Array(salt);
       let decTestheader = new Uint8Array(header);
 
       // Adaptive security parameters with fallback
       let opsLimit = sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE;
       let memLimit = sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE;
-      
+
       // Check if we can use stronger parameters
-      if (typeof navigator !== 'undefined' && navigator.deviceMemory && navigator.hardwareConcurrency) {
+      if (
+        typeof navigator !== 'undefined' &&
+        navigator.deviceMemory &&
+        navigator.hardwareConcurrency
+      ) {
         const memory = navigator.deviceMemory || 4;
         const cores = navigator.hardwareConcurrency || 4;
-        
+
         // Use MODERATE parameters for high-end devices
         if (memory >= 8 && cores >= 8) {
           opsLimit = sodium.crypto_pwhash_OPSLIMIT_MODERATE;
@@ -435,42 +412,46 @@ const _sodium = require("libsodium-wrappers");
         decTestsalt,
         opsLimit,
         memLimit,
-        sodium.crypto_pwhash_ALG_ARGON2ID13
+        sodium.crypto_pwhash_ALG_ARGON2ID13,
       );
 
       let state_in = sodium.crypto_secretstream_xchacha20poly1305_init_pull(
         decTestheader,
-        decTestKey
+        decTestKey,
       );
 
       if (state_in) {
         let decTestresults = sodium.crypto_secretstream_xchacha20poly1305_pull(
           state_in,
-          new Uint8Array(decFileBuff)
+          new Uint8Array(decFileBuff),
         );
         if (decTestresults) {
-          client.postMessage({ reply: "readyToDecrypt" });
+          client.postMessage({ reply: 'readyToDecrypt' });
         } else {
-          client.postMessage({ reply: "wrongPassword" });
+          client.postMessage({ reply: 'wrongPassword' });
         }
       }
     }
   };
 
   const decKeyGenerator = (password, signature, salt, header, client) => {
-    if (config.decoder.decode(signature) === config.sigCodes["v2_symmetric"]) {
+    if (config.decoder.decode(signature) === config.sigCodes['v2_symmetric']) {
       salt = new Uint8Array(salt);
       header = new Uint8Array(header);
 
       // Adaptive security parameters with fallback
       let opsLimit = sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE;
       let memLimit = sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE;
-      
+
       // Check if we can use stronger parameters
-      if (typeof navigator !== 'undefined' && navigator.deviceMemory && navigator.hardwareConcurrency) {
+      if (
+        typeof navigator !== 'undefined' &&
+        navigator.deviceMemory &&
+        navigator.hardwareConcurrency
+      ) {
         const memory = navigator.deviceMemory || 4;
         const cores = navigator.hardwareConcurrency || 4;
-        
+
         // Use MODERATE parameters for high-end devices
         if (memory >= 8 && cores >= 8) {
           opsLimit = sodium.crypto_pwhash_OPSLIMIT_MODERATE;
@@ -484,26 +465,20 @@ const _sodium = require("libsodium-wrappers");
         salt,
         opsLimit,
         memLimit,
-        sodium.crypto_pwhash_ALG_ARGON2ID13
+        sodium.crypto_pwhash_ALG_ARGON2ID13,
       );
 
-      state = sodium.crypto_secretstream_xchacha20poly1305_init_pull(
-        header,
-        theKey
-      );
+      state = sodium.crypto_secretstream_xchacha20poly1305_init_pull(header, theKey);
 
       if (state) {
-        client.postMessage({ reply: "decKeysGenerated" });
+        client.postMessage({ reply: 'decKeysGenerated' });
       }
     }
   };
 
   const decryptChunks = (chunk, last, client) => {
     setTimeout(function () {
-      let result = sodium.crypto_secretstream_xchacha20poly1305_pull(
-        state,
-        new Uint8Array(chunk)
-      );
+      let result = sodium.crypto_secretstream_xchacha20poly1305_pull(state, new Uint8Array(chunk));
 
       if (result) {
         let decryptedChunk = result.message;
@@ -512,13 +487,13 @@ const _sodium = require("libsodium-wrappers");
 
         if (last) {
           streamController.close();
-          client.postMessage({ reply: "decryptionFinished" });
+          client.postMessage({ reply: 'decryptionFinished' });
         }
         if (!last) {
-          client.postMessage({ reply: "continueDecryption" });
+          client.postMessage({ reply: 'continueDecryption' });
         }
       } else {
-        client.postMessage({ reply: "wrongPassword" });
+        client.postMessage({ reply: 'wrongPassword' });
       }
     }, 500);
   };

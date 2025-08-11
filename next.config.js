@@ -8,6 +8,6 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['@material-ui/core', '@material-ui/icons'],
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

@@ -1,54 +1,54 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 /* eslint-disable @next/next/no-img-element */
-import fs from "fs";
-import path from "path";
-import { marked } from "marked";
-import { useState, useEffect, Suspense, useMemo } from "react";
-import PropTypes from "prop-types";
-import dynamic from "next/dynamic";
-import AppBar from "@material-ui/core/AppBar";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Divider from "@material-ui/core/Divider";
-import Drawer from "@material-ui/core/Drawer";
-import Hidden from "@material-ui/core/Hidden";
-import IconButton from "@material-ui/core/IconButton";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import MenuIcon from "@material-ui/icons/Menu";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import Link from "next/link";
-import Container from "@material-ui/core/Container";
-import Button from "@material-ui/core/Button";
-import GitHubIcon from "@material-ui/icons/GitHub";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
-import StarsIcon from "@material-ui/icons/Stars";
-import GetAppIcon from "@material-ui/icons/GetApp";
-import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
-import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
-import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
-import MenuBookIcon from "@material-ui/icons/MenuBook";
-import LiveHelpIcon from "@material-ui/icons/LiveHelp";
-import HistoryIcon from "@material-ui/icons/History";
-import prism from "prismjs";
-import Settings from "../src/components/Settings";
-import { ThemeProvider } from "@material-ui/styles";
-import { Theme, checkTheme } from "../src/config/Theme";
-import locales from "../locales/locales";
-import { getTranslations as t } from "../locales";
+import fs from 'fs';
+import path from 'path';
+import { marked } from 'marked';
+import { useState, useEffect, Suspense, useMemo } from 'react';
+import PropTypes from 'prop-types';
+import dynamic from 'next/dynamic';
+import AppBar from '@material-ui/core/AppBar';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Divider from '@material-ui/core/Divider';
+import Drawer from '@material-ui/core/Drawer';
+import Hidden from '@material-ui/core/Hidden';
+import IconButton from '@material-ui/core/IconButton';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import MenuIcon from '@material-ui/icons/Menu';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import Link from 'next/link';
+import Container from '@material-ui/core/Container';
+import Button from '@material-ui/core/Button';
+import GitHubIcon from '@material-ui/icons/GitHub';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
+import StarsIcon from '@material-ui/icons/Stars';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import EmojiObjectsIcon from '@material-ui/icons/EmojiObjects';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
+import LiveHelpIcon from '@material-ui/icons/LiveHelp';
+import HistoryIcon from '@material-ui/icons/History';
+import prism from 'prismjs';
+import Settings from '../src/components/Settings';
+import { ThemeProvider } from '@material-ui/styles';
+import { Theme, checkTheme } from '../src/config/Theme';
+import locales from '../locales/locales';
+import { getTranslations as t } from '../locales';
 
 // Lazy load components for better performance
-const Footer = dynamic(() => import("../src/components/Footer"), {
+const Footer = dynamic(() => import('../src/components/Footer'), {
   loading: () => <CircularProgress />,
   ssr: false,
 });
 
 // Lazy load marked for better performance
-const MarkdownRenderer = dynamic(() => import("../src/components/MarkdownRenderer"), {
+const MarkdownRenderer = dynamic(() => import('../src/components/MarkdownRenderer'), {
   loading: () => <CircularProgress />,
   ssr: true,
 });
@@ -58,17 +58,17 @@ const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: Theme.palette.alabaster.main,
-    minHeight: "100vh",
+    minHeight: '100vh',
   },
   drawer: {
-    [theme.breakpoints.down("lg")]: {
-      display: "none",
+    [theme.breakpoints.down('lg')]: {
+      display: 'none',
     },
   },
   appBar: {
     backgroundColor: Theme.palette.alabaster.main,
-    [theme.breakpoints.up("sm")]: {
-      width: "100%",
+    [theme.breakpoints.up('sm')]: {
+      width: '100%',
       marginLeft: drawerWidth,
       zIndex: theme.zIndex.drawer - 1,
     },
@@ -79,14 +79,14 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 5,
   },
   button: {
-    textTransform: "none",
+    textTransform: 'none',
     color: Theme.palette.diamondBlack.main,
   },
 
   menuButton: {
     marginRight: theme.spacing(2),
-    [theme.breakpoints.up("xl")]: {
-      display: "none",
+    [theme.breakpoints.up('xl')]: {
+      display: 'none',
     },
   },
   // necessary for content to be below app bar
@@ -96,133 +96,133 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     padding: theme.spacing(3),
-    marginTop: "20px",
+    marginTop: '20px',
 
-    "& h1": {
+    '& h1': {
       marginTop: 20,
       color: Theme.palette.mineShaft.main,
-      borderRadius: "8px",
+      borderRadius: '8px',
       paddingBottom: 15,
-      "& a": {
-        textDecoration: "none",
-        fontWeight: "bold",
+      '& a': {
+        textDecoration: 'none',
+        fontWeight: 'bold',
         fontSize: 40,
-        letterSpacing: "1px",
-        borderBottom: "1px solid #000",
+        letterSpacing: '1px',
+        borderBottom: '1px solid #000',
       },
     },
 
-    "& h2": {
+    '& h2': {
       color: Theme.palette.mineShaft.main,
-      fontSize: "26px",
+      fontSize: '26px',
       paddingTop: 20,
       paddingBottom: 20,
-      fontWeight: "700",
+      fontWeight: '700',
     },
 
-    "& h3": {
+    '& h3': {
       color: Theme.palette.mineShaft.main,
-      fontSize: "24px",
+      fontSize: '24px',
       paddingTop: 20,
       paddingBottom: 20,
-      fontWeight: "700",
+      fontWeight: '700',
     },
 
-    "& a": {
+    '& a': {
       color: Theme.palette.mineShaft.main,
     },
 
-    "& p": {
-      fontSize: "17px",
+    '& p': {
+      fontSize: '17px',
       color: Theme.palette.mineShaft.main,
       lineHeight: 2,
-      "& code": {
-        backgroundColor: "#f1f1f1",
-        wordWrap: "break-word",
-        fontFamily: "inherit",
+      '& code': {
+        backgroundColor: '#f1f1f1',
+        wordWrap: 'break-word',
+        fontFamily: 'inherit',
         paddingRight: 7,
         paddingLeft: 7,
-        borderRadius: "3px",
+        borderRadius: '3px',
       },
     },
 
-    "& li": {
+    '& li': {
       padding: 2.5,
-      fontSize: "18px",
+      fontSize: '18px',
       color: Theme.palette.mineShaft.main,
-      "& a": {
-        textDecoration: "none",
-        letterSpacing: "0.5px",
-        borderBottom: "1px solid #000",
+      '& a': {
+        textDecoration: 'none',
+        letterSpacing: '0.5px',
+        borderBottom: '1px solid #000',
       },
     },
 
-    "& hr": {
+    '& hr': {
       backgroundColor: Theme.palette.mercury.main,
-      border: "none",
-      height: "1.5px",
+      border: 'none',
+      height: '1.5px',
       marginTop: 20,
       marginBottom: 30,
     },
 
-    "& ul": {
+    '& ul': {
       paddingLeft: 25,
       paddingBottom: 15,
-      fontSize: "16px",
-      "& code": {
-        backgroundColor: "#f1f1f1",
-        wordWrap: "break-word",
-        fontFamily: "inherit",
+      fontSize: '16px',
+      '& code': {
+        backgroundColor: '#f1f1f1',
+        wordWrap: 'break-word',
+        fontFamily: 'inherit',
         paddingRight: 7,
         paddingLeft: 7,
-        borderRadius: "3px",
+        borderRadius: '3px',
       },
     },
 
-    "& ol": {
+    '& ol': {
       paddingLeft: 25,
       paddingBottom: 15,
-      fontSize: "16px",
-      "& code": {
-        backgroundColor: "#f1f1f1",
-        wordWrap: "break-word",
-        fontFamily: "inherit",
+      fontSize: '16px',
+      '& code': {
+        backgroundColor: '#f1f1f1',
+        wordWrap: 'break-word',
+        fontFamily: 'inherit',
         paddingRight: 7,
         paddingLeft: 7,
-        borderRadius: "3px",
+        borderRadius: '3px',
       },
     },
 
-    "& pre": {
-      background: "rgb(235, 235, 235)",
-      padding: "13px",
-      marginTop: "-5px",
-      marginBottom: "20px",
-      lineHeight: "1.3",
-      fontSize: "14px",
-      borderRadius: "3px",
-      overflow: "auto",
-      "& code": {
+    '& pre': {
+      background: 'rgb(235, 235, 235)',
+      padding: '13px',
+      marginTop: '-5px',
+      marginBottom: '20px',
+      lineHeight: '1.3',
+      fontSize: '14px',
+      borderRadius: '3px',
+      overflow: 'auto',
+      '& code': {
         color: Theme.palette.mineShaft.main,
       },
     },
 
-    "& .codeBox": {
-      "& pre": {
-        background: "#2E3440",
-        "& code": {
-          color: "#f8f8f2",
+    '& .codeBox': {
+      '& pre': {
+        background: '#2E3440',
+        '& code': {
+          color: '#f8f8f2',
         },
       },
     },
 
-    "& blockquote": {
-      backgroundColor: "#f1f1f1",
-      marginTop: "15px",
-      color: "#535a60",
-      borderLeft: "5px solid #c8ccd0",
+    '& blockquote': {
+      backgroundColor: '#f1f1f1',
+      marginTop: '15px',
+      color: '#535a60',
+      borderLeft: '5px solid #c8ccd0',
       marginBottom: 20,
-      "& p": {
+      '& p': {
         padding: 10,
       },
     },
@@ -239,7 +239,7 @@ export default function About(props) {
   const classes = useStyles();
   const theme = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [docContent, setDocContent] = useState("");
+  const [docContent, setDocContent] = useState('');
 
   useEffect(() => {
     checkTheme();
@@ -247,10 +247,10 @@ export default function About(props) {
 
   useEffect(() => {
     const getLocale = () => {
-      if (typeof window !== "undefined") {
-        let language = window.localStorage.getItem("language");
-        let userLanguage = navigator.language.replace("-", "_");
-        return language ? language : locales[userLanguage] ? userLanguage : "en_US";
+      if (typeof window !== 'undefined') {
+        let language = window.localStorage.getItem('language');
+        let userLanguage = navigator.language.replace('-', '_');
+        return language ? language : locales[userLanguage] ? userLanguage : 'en_US';
       }
     };
 
@@ -275,7 +275,7 @@ export default function About(props) {
 
     const getContent = async () => {
       for (const key in langResult) {
-        if (key == "content") {
+        if (key == 'content') {
           setDocContent(langResult[key]);
         }
       }
@@ -286,7 +286,7 @@ export default function About(props) {
 
   // Memoize the parsed content to avoid re-parsing
   const parsedContent = useMemo(() => {
-    if (!docContent) return "";
+    if (!docContent) return '';
     return marked(docContent);
   }, [docContent]);
 
@@ -315,18 +315,18 @@ export default function About(props) {
       <Divider />
       <List>
         {[
-          { name: t("introduction"), icon: <BookmarkBorderIcon /> },
-          { name: t("features"), icon: <StarsIcon /> },
-          { name: t("installation"), icon: <GetAppIcon /> },
-          { name: t("usage"), icon: <EmojiObjectsIcon /> },
-          { name: t("limitations"), icon: <ErrorOutlineIcon /> },
-          { name: t("best_practices"), icon: <VerifiedUserIcon /> },
-          { name: t("faq"), icon: <LiveHelpIcon /> },
-          { name: t("technical_details"), icon: <MenuBookIcon /> },
-          { name: t("changelog"), icon: <HistoryIcon /> },
+          { name: t('introduction'), icon: <BookmarkBorderIcon /> },
+          { name: t('features'), icon: <StarsIcon /> },
+          { name: t('installation'), icon: <GetAppIcon /> },
+          { name: t('usage'), icon: <EmojiObjectsIcon /> },
+          { name: t('limitations'), icon: <ErrorOutlineIcon /> },
+          { name: t('best_practices'), icon: <VerifiedUserIcon /> },
+          { name: t('faq'), icon: <LiveHelpIcon /> },
+          { name: t('technical_details'), icon: <MenuBookIcon /> },
+          { name: t('changelog'), icon: <HistoryIcon /> },
         ].map((text, index) => (
           <div onClick={handleClose} key={index}>
-            <Link href={"#" + text.name.toLowerCase()} passHref>
+            <Link href={'#' + text.name.toLowerCase()} passHref>
               <ListItem button>
                 <ListItemIcon>{text.icon}</ListItemIcon>
                 <ListItemText primary={text.name} />
@@ -343,12 +343,7 @@ export default function About(props) {
       <div className={classes.root}>
         <CssBaseline />
 
-        <AppBar
-          color="transparent"
-          position="fixed"
-          className={classes.appBar}
-          elevation={0}
-        >
+        <AppBar color="transparent" position="fixed" className={classes.appBar} elevation={0}>
           <Container maxWidth="lg">
             <Toolbar>
               <IconButton
@@ -371,11 +366,7 @@ export default function About(props) {
                 {t('home')}
               </Button>
 
-              <IconButton
-                href="https://github.com/airbauer/hat.sh"
-                target="_blank"
-                rel="noopener"
-              >
+              <IconButton href="https://github.com/airbauer/hat.sh" target="_blank" rel="noopener">
                 <GitHubIcon />
               </IconButton>
 
@@ -418,16 +409,26 @@ export default function About(props) {
           <Container maxWidth="lg">
             <div className={classes.toolbar} />
 
-            <Suspense fallback={<div className={classes.loadingContainer}><CircularProgress /></div>}>
+            <Suspense
+              fallback={
+                <div className={classes.loadingContainer}>
+                  <CircularProgress />
+                </div>
+              }
+            >
               <div dangerouslySetInnerHTML={{ __html: parsedContent }}></div>
-              <div
-                dangerouslySetInnerHTML={{ __html: parsedChangelog }}
-              ></div>
+              <div dangerouslySetInnerHTML={{ __html: parsedChangelog }}></div>
             </Suspense>
           </Container>
         </main>
 
-        <Suspense fallback={<div className={classes.loadingContainer}><CircularProgress /></div>}>
+        <Suspense
+          fallback={
+            <div className={classes.loadingContainer}>
+              <CircularProgress />
+            </div>
+          }
+        >
           <Footer />
         </Suspense>
       </div>
@@ -453,23 +454,17 @@ export async function getStaticProps() {
       let docFilePath = `locales/${code}/docs.md`;
       let docFile;
       try {
-        docFile = fs.readFileSync(
-          path.join(docFilePath),
-          "utf-8"
-        );
+        docFile = fs.readFileSync(path.join(docFilePath), 'utf-8');
       } catch (error) {
-        docFile = fs.readFileSync(
-          path.join(`locales/en_US/docs.md`),
-          "utf-8"
-        );
+        docFile = fs.readFileSync(path.join(`locales/en_US/docs.md`), 'utf-8');
       }
-      
+
       let docStructure = { lang: code, content: docFile };
       docs.push(docStructure);
     });
   }
 
-  const changelog = fs.readFileSync("CHANGELOG.md", "utf-8");
+  const changelog = fs.readFileSync('CHANGELOG.md', 'utf-8');
 
   return {
     props: {

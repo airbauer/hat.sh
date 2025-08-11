@@ -1,25 +1,24 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 /* eslint-disable @next/next/no-img-element */
-import { makeStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Container from "@material-ui/core/Container";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import GitHubIcon from "@material-ui/icons/GitHub";
-import VersionBadge from "./VersionBadge";
-import Settings from "./Settings";
-import { getTranslations as t } from "../../locales";
+import { makeStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Container from '@material-ui/core/Container';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import GitHubIcon from '@material-ui/icons/GitHub';
+import VersionBadge from './VersionBadge';
+import Settings from './Settings';
+import { getTranslations as t } from '../../locales';
 
 const useStyles = makeStyles((theme) => ({
-
   logo: {
     flexGrow: 1,
     marginTop: 10,
   },
   button: {
-    textTransform: "none",
+    textTransform: 'none',
     color: theme.palette.diamondBlack.main,
   },
 }));
@@ -40,14 +39,10 @@ export default function NavAppBar() {
             </Typography>
 
             <Button color="inherit" href="/about/" className={classes.button}>
-              {t("about")}
+              {t('about')}
             </Button>
 
-            <IconButton
-              href="https://github.com/airbauer/hat.sh"
-              target="_blank"
-              rel="noopener"
-            >
+            <IconButton href="https://github.com/airbauer/hat.sh" target="_blank" rel="noopener">
               <GitHubIcon />
             </IconButton>
 

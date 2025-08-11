@@ -1,33 +1,33 @@
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
-import PropTypes from "prop-types";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Container from "@material-ui/core/Container";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import LimitedEncryptionPanel from "./LimitedEncryptionPanel";
-import LimitedDecryptionPanel from "./LimitedDecryptionPanel";
-import LimitedAlert from "./LimitedAlert";
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import PropTypes from 'prop-types';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Container from '@material-ui/core/Container';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import LimitedEncryptionPanel from './LimitedEncryptionPanel';
+import LimitedDecryptionPanel from './LimitedDecryptionPanel';
+import LimitedAlert from './LimitedAlert';
 
-import { getTranslations as t } from "../../../locales";
+import { getTranslations as t } from '../../../locales';
 
 const StyledTabs = withStyles({
   indicator: {
-    display: "none",
+    display: 'none',
   },
 })((props) => <Tabs {...props} TabIndicatorProps={{ children: <span /> }} />);
 
 const StyledTab = withStyles((theme) => ({
   root: {
-    textTransform: "none",
-    padding: "8px",
-    transition: "background-color 0.2s ease-out, color 0.01s",
+    textTransform: 'none',
+    padding: '8px',
+    transition: 'background-color 0.2s ease-out, color 0.01s',
 
-    "&$selected": {
+    '&$selected': {
       backgroundColor: theme.palette.white.main,
-      boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
-      borderRadius: "8px",
+      boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px',
+      borderRadius: '8px',
     },
   },
   selected: {},
@@ -35,13 +35,13 @@ const StyledTab = withStyles((theme) => ({
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    maxWidth: "768px",
+    maxWidth: '768px',
   },
 
   bar: {
     marginTop: 15,
     backgroundColor: theme.palette.gallery.main,
-    borderRadius: "8px",
+    borderRadius: '8px',
     padding: 8,
   },
 
@@ -84,22 +84,19 @@ export default function LimitedPanels() {
   const encryption = { tab: 0, label: t('encryption') };
   const decryption = { tab: 1, label: t('decryption') };
 
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
     router.replace(router.pathname);
   };
 
   useEffect(() => {
-
-    if (query.tab && query.tab === "encryption") {
+    if (query.tab && query.tab === 'encryption') {
       setValue(encryption.tab);
     }
 
-    if (query.tab && query.tab === "decryption") {
+    if (query.tab && query.tab === 'decryption') {
       setValue(decryption.tab);
     }
-
   }, [decryption.tab, encryption.tab, query.tab]);
 
   return (
@@ -107,29 +104,16 @@ export default function LimitedPanels() {
       <Container className={classes.root}>
         <LimitedAlert />
         <AppBar position="static" className={classes.bar} elevation={0}>
-          <StyledTabs
-            value={value}
-            onChange={handleChange}
-            variant="fullWidth"
-            centered
-          >
+          <StyledTabs value={value} onChange={handleChange} variant="fullWidth" centered>
             <StyledTab label={encryption.label} className={classes.tab} />
             <StyledTab label={decryption.label} className={classes.tab} />
           </StyledTabs>
         </AppBar>
 
-        <TabPanel
-          value={value}
-          index={encryption.tab}
-          className={classes.TabPanel}
-        >
+        <TabPanel value={value} index={encryption.tab} className={classes.TabPanel}>
           <LimitedEncryptionPanel />
         </TabPanel>
-        <TabPanel
-          value={value}
-          index={decryption.tab}
-          className={classes.TabPanel}
-        >
+        <TabPanel value={value} index={decryption.tab} className={classes.TabPanel}>
           <LimitedDecryptionPanel />
         </TabPanel>
       </Container>

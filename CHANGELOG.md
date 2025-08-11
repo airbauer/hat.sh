@@ -1,6 +1,7 @@
 # [CHANGELOG](#changelog)
 
 ---
+
 ## v2.3.6
 
 - Update packages
@@ -70,7 +71,7 @@
 - Implementing custom localization.
 - In an effort to encourage the use of secure passwords, The minimum number of characters in the password input has been set to 12 characters.
 - Adding the ability to generate a QR code for the public key when generating a keypair.
-- New file picker design, display of total files counts and size. 
+- New file picker design, display of total files counts and size.
 - Visiting different tabs through custom links (e.g ?tab=decryption).
 - Code review, cleanup and bug fixes.
 
@@ -130,6 +131,7 @@
 - Removal of extra code comments.
 
 ## V2.0.4
+
 - Code review.
 - Removal of unwanted lines of code.
 - Comments cleanup.
@@ -144,10 +146,12 @@
 - Safari and Mobile users are now limited to 1GB file.
 
 ## V2.0.2
+
 - A lot of bug fixes and code cleaning.
 - Adding support to Safari and Mobile browsers.
 
 ## V2.0.1
+
 - bug fixes.
 - Switching to React (next) instead of vanilla javascript.
 

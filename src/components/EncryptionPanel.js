@@ -1,75 +1,70 @@
 /* eslint-disable @next/next/no-img-element */
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
-import { useDropzone } from "react-dropzone";
-import { formatBytes } from "../helpers/formatBytes";
-import KeyPairGeneration from "./KeyPairGeneration";
-import { generatePassword } from "../utils/generatePassword";
-import { computePublicKey } from "../utils/computePublicKey";
-import passwordStrengthCheck from "../utils/passwordStrengthCheck";
-import { CHUNK_SIZE } from "../config/Constants";
-import { makeStyles } from "@material-ui/core/styles";
-import { Alert, AlertTitle } from "@material-ui/lab";
-import Grid from "@material-ui/core/Grid";
-import Stepper from "@material-ui/core/Stepper";
-import Step from "@material-ui/core/Step";
-import StepLabel from "@material-ui/core/StepLabel";
-import StepContent from "@material-ui/core/StepContent";
-import Button from "@material-ui/core/Button";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Backdrop from "@material-ui/core/Backdrop";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import IconButton from "@material-ui/core/IconButton";
-import CachedIcon from "@material-ui/icons/Cached";
-import Tooltip from "@material-ui/core/Tooltip";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormControl from "@material-ui/core/FormControl";
-import Snackbar from "@material-ui/core/Snackbar";
-import AttachFileIcon from "@material-ui/icons/AttachFile";
-import FileCopyIcon from "@material-ui/icons/FileCopy";
-import RefreshIcon from "@material-ui/icons/Refresh";
-import DescriptionIcon from "@material-ui/icons/Description";
-import GetAppIcon from "@material-ui/icons/GetApp";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import LinkIcon from "@material-ui/icons/Link";
-import Collapse from "@material-ui/core/Collapse";
-import CloseIcon from "@material-ui/icons/Close";
-import AddIcon from "@material-ui/icons/Add";
-import RotateLeftIcon from "@material-ui/icons/RotateLeft";
-import { getTranslations as t } from "../../locales";
-import {
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-} from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { useDropzone } from 'react-dropzone';
+import { formatBytes } from '../helpers/formatBytes';
+import KeyPairGeneration from './KeyPairGeneration';
+import { generatePassword } from '../utils/generatePassword';
+import { computePublicKey } from '../utils/computePublicKey';
+import passwordStrengthCheck from '../utils/passwordStrengthCheck';
+import { CHUNK_SIZE } from '../config/Constants';
+import { makeStyles } from '@material-ui/core/styles';
+import { Alert, AlertTitle } from '@material-ui/lab';
+import Grid from '@material-ui/core/Grid';
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
+import StepContent from '@material-ui/core/StepContent';
+import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Backdrop from '@material-ui/core/Backdrop';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import IconButton from '@material-ui/core/IconButton';
+import CachedIcon from '@material-ui/icons/Cached';
+import Tooltip from '@material-ui/core/Tooltip';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import Snackbar from '@material-ui/core/Snackbar';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+import RefreshIcon from '@material-ui/icons/Refresh';
+import DescriptionIcon from '@material-ui/icons/Description';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import LinkIcon from '@material-ui/icons/Link';
+import Collapse from '@material-ui/core/Collapse';
+import CloseIcon from '@material-ui/icons/Close';
+import AddIcon from '@material-ui/icons/Add';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import { getTranslations as t } from '../../locales';
+import { List, ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
+    width: '100%',
   },
   offline: {
     fontSize: 12,
-    float: "right",
+    float: 'right',
     color: theme.palette.diamondBlack.main,
   },
   stepper: {
     color: theme.palette.mineShaft.main,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
 
   stepIcon: {
-    "&$activeStepIcon": {
+    '&$activeStepIcon': {
       color: theme.palette.emperor.main,
     },
-    "&$completedStepIcon": {
+    '&$completedStepIcon': {
       color: theme.palette.emperor.main,
     },
   },
@@ -79,29 +74,29 @@ const useStyles = makeStyles((theme) => ({
   button: {
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1),
-    borderRadius: "8px",
-    border: "none",
+    borderRadius: '8px',
+    border: 'none',
     color: theme.palette.mineShaft.main,
     backgroundColor: theme.palette.mercury.light,
-    "&:hover": {
+    '&:hover': {
       backgroundColor: theme.palette.mercury.main,
     },
-    transition: "background-color 0.2s ease-out, color 0.01s",
+    transition: 'background-color 0.2s ease-out, color 0.01s',
   },
 
   browseButton: {
     padding: 8,
     paddingLeft: 15,
     paddingRight: 15,
-    textTransform: "none",
-    borderRadius: "8px",
-    border: "none",
+    textTransform: 'none',
+    borderRadius: '8px',
+    border: 'none',
     color: theme.palette.mineShaft.main,
     backgroundColor: theme.palette.alto.light,
-    "&:hover": {
+    '&:hover': {
       backgroundColor: theme.palette.alto.main,
     },
-    transition: "background-color 0.2s ease-out, color 0.01s",
+    transition: 'background-color 0.2s ease-out, color 0.01s',
   },
 
   resetButton: {
@@ -109,93 +104,93 @@ const useStyles = makeStyles((theme) => ({
     padding: 8,
     paddingLeft: 15,
     paddingRight: 15,
-    textTransform: "none",
-    borderRadius: "8px",
-    border: "none",
+    textTransform: 'none',
+    borderRadius: '8px',
+    border: 'none',
     color: theme.palette.flower.text,
     backgroundColor: theme.palette.flower.main,
-    "&:hover": {
+    '&:hover': {
       backgroundColor: theme.palette.flower.light,
     },
-    transition: "background-color 0.2s ease-out, color 0.01s",
+    transition: 'background-color 0.2s ease-out, color 0.01s',
   },
 
   backButton: {
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1),
-    borderRadius: "8px",
+    borderRadius: '8px',
     backgroundColor: theme.palette.mercury.main,
-    transition: "color .01s",
+    transition: 'color .01s',
   },
   nextButton: {
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1),
-    borderRadius: "8px",
+    borderRadius: '8px',
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.white.main,
-    "&:hover": {
+    '&:hover': {
       backgroundColor: theme.palette.mineShaft.main,
     },
-    transition: "color .01s",
+    transition: 'color .01s',
   },
   actionsContainer: {
     marginBottom: theme.spacing(2),
   },
   resetContainer: {
     padding: theme.spacing(3),
-    boxShadow: "rgba(149, 157, 165, 0.4) 0px 8px 24px",
-    borderRadius: "8px",
+    boxShadow: 'rgba(149, 157, 165, 0.4) 0px 8px 24px',
+    borderRadius: '8px',
   },
 
   input: {
-    display: "none",
+    display: 'none',
   },
 
   fileArea: {
-    padding: "20px",
-    border: "5px dashed",
+    padding: '20px',
+    border: '5px dashed',
     borderColor: theme.palette.gallery.main,
-    borderRadius: "14px",
-    marginBottom: "10px",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
+    borderRadius: '14px',
+    marginBottom: '10px',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
   },
 
   filesInfo: {
-    float: "right",
+    float: 'right',
     marginTop: 15,
-    textTransform: "none",
+    textTransform: 'none',
     color: theme.palette.cottonBoll.text,
-    transition: "background-color 0.2s ease-out, color 0.01s",
+    transition: 'background-color 0.2s ease-out, color 0.01s',
   },
 
   filesPaper: {
     marginBottom: 15,
-    overflow: "auto",
-    maxHeight: "280px",
-    backgroundColor: "transparent",
+    overflow: 'auto',
+    maxHeight: '280px',
+    backgroundColor: 'transparent',
   },
 
   filesList: {
-    display: "flex",
-    flex: "1",
-    flexWrap: "wrap",
-    alignContent: "center",
-    justifyContent: "center",
+    display: 'flex',
+    flex: '1',
+    flexWrap: 'wrap',
+    alignContent: 'center',
+    justifyContent: 'center',
   },
 
   filesListItem: {
-    backgroundColor: "#f3f3f3",
-    borderRadius: "8px",
+    backgroundColor: '#f3f3f3',
+    borderRadius: '8px',
     padding: 15,
   },
 
   filesListItemText: {
-    width: "100px",
-    maxWidth: "150px",
-    minHeight: "50px",
-    maxHeight: "50px",
+    width: '100px',
+    maxWidth: '150px',
+    minHeight: '50px',
+    maxHeight: '50px',
   },
 }));
 
@@ -205,7 +200,7 @@ let file,
   index,
   currFile = 0,
   numberOfFiles,
-  encryptionMethodState = "secretKey",
+  encryptionMethodState = 'secretKey',
   privateKey,
   publicKey;
 
@@ -244,7 +239,7 @@ export default function EncryptionPanel() {
 
   const [shortPasswordError, setShortPasswordError] = useState(false);
 
-  const [encryptionMethod, setEncryptionMethod] = useState("secretKey");
+  const [encryptionMethod, setEncryptionMethod] = useState('secretKey');
 
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -322,7 +317,7 @@ export default function EncryptionPanel() {
   };
 
   const handleMethodStep = () => {
-    if (encryptionMethodState === "secretKey") {
+    if (encryptionMethodState === 'secretKey') {
       if (Password.length >= 12) {
         setActiveStep(2);
       } else {
@@ -330,12 +325,12 @@ export default function EncryptionPanel() {
       }
     }
 
-    if (encryptionMethodState === "publicKey") {
+    if (encryptionMethodState === 'publicKey') {
       navigator.serviceWorker.ready.then((reg) => {
-        let mode = "test";
+        let mode = 'test';
 
         reg.active.postMessage({
-          cmd: "requestEncKeyPair",
+          cmd: 'requestEncKeyPair',
           privateKey,
           publicKey,
           mode,
@@ -357,8 +352,7 @@ export default function EncryptionPanel() {
       files = files.concat(selectedFiles);
       files = files.filter(
         (thing, index, self) =>
-          index ===
-          self.findIndex((t) => t.name === thing.name && t.size === thing.size)
+          index === self.findIndex((t) => t.name === thing.name && t.size === thing.size),
       );
     } else {
       files = selectedFiles;
@@ -443,24 +437,24 @@ export default function EncryptionPanel() {
 
   const prepareFile = () => {
     // send file name to sw
-    let fileName = encodeURIComponent(files[currFile].name + ".enc");
+    let fileName = encodeURIComponent(files[currFile].name + '.enc');
     navigator.serviceWorker.ready.then((reg) => {
-      reg.active.postMessage({ cmd: "prepareFileNameEnc", fileName });
+      reg.active.postMessage({ cmd: 'prepareFileNameEnc', fileName });
     });
   };
 
   const kickOffEncryption = async () => {
     if (currFile <= numberOfFiles - 1) {
       file = files[currFile];
-      window.open(`file`, "_self");
+      window.open(`file`, '_self');
       setIsDownloading(true);
 
-      if (encryptionMethodState === "publicKey") {
+      if (encryptionMethodState === 'publicKey') {
         navigator.serviceWorker.ready.then((reg) => {
-          let mode = "derive";
+          let mode = 'derive';
 
           reg.active.postMessage({
-            cmd: "requestEncKeyPair",
+            cmd: 'requestEncKeyPair',
             privateKey,
             publicKey,
             mode,
@@ -468,9 +462,9 @@ export default function EncryptionPanel() {
         });
       }
 
-      if (encryptionMethodState === "secretKey") {
+      if (encryptionMethodState === 'secretKey') {
         navigator.serviceWorker.ready.then((reg) => {
-          reg.active.postMessage({ cmd: "requestEncryption", password });
+          reg.active.postMessage({ cmd: 'requestEncryption', password });
         });
       }
     } else {
@@ -486,20 +480,19 @@ export default function EncryptionPanel() {
         .then((chunk) => {
           index = CHUNK_SIZE;
 
-          if (method === "secretKey") {
-            reg.active.postMessage(
-              { cmd: "encryptFirstChunk", chunk, last: index >= file.size },
-              [chunk]
-            );
+          if (method === 'secretKey') {
+            reg.active.postMessage({ cmd: 'encryptFirstChunk', chunk, last: index >= file.size }, [
+              chunk,
+            ]);
           }
-          if (method === "publicKey") {
+          if (method === 'publicKey') {
             reg.active.postMessage(
               {
-                cmd: "asymmetricEncryptFirstChunk",
+                cmd: 'asymmetricEncryptFirstChunk',
                 chunk,
                 last: index >= file.size,
               },
-              [chunk]
+              [chunk],
             );
           }
         });
@@ -513,17 +506,16 @@ export default function EncryptionPanel() {
         .arrayBuffer()
         .then((chunk) => {
           index += CHUNK_SIZE;
-          e.source.postMessage(
-            { cmd: "encryptRestOfChunks", chunk, last: index >= file.size },
-            [chunk]
-          );
+          e.source.postMessage({ cmd: 'encryptRestOfChunks', chunk, last: index >= file.size }, [
+            chunk,
+          ]);
         });
     });
   };
 
   const createShareableLink = async () => {
     let pk = await computePublicKey(PrivateKey);
-    let link = window.location.origin + "/?tab=decryption&publicKey=" + pk;
+    let link = window.location.origin + '/?tab=decryption&publicKey=' + pk;
     setShareableLink(link);
   };
 
@@ -531,7 +523,7 @@ export default function EncryptionPanel() {
     const pingSW = setInterval(() => {
       navigator.serviceWorker.ready.then((reg) => {
         reg.active.postMessage({
-          cmd: "pingSW",
+          cmd: 'pingSW',
         });
       });
     }, 15000);
@@ -539,57 +531,57 @@ export default function EncryptionPanel() {
   }, []);
 
   useEffect(() => {
-    if (query.tab === "encryption" && query.publicKey) {
+    if (query.tab === 'encryption' && query.publicKey) {
       setPublicKey(query.publicKey);
       publicKey = query.publicKey;
       setPkAlert(true);
-      setEncryptionMethod("publicKey");
-      encryptionMethodState = "publicKey";
+      setEncryptionMethod('publicKey');
+      encryptionMethodState = 'publicKey';
     }
   }, [query.publicKey, query.tab]);
 
   useEffect(() => {
-    navigator.serviceWorker.addEventListener("message", (e) => {
+    navigator.serviceWorker.addEventListener('message', (e) => {
       switch (e.data.reply) {
-        case "goodKeyPair":
+        case 'goodKeyPair':
           setActiveStep(2);
           break;
 
-        case "wrongPrivateKey":
+        case 'wrongPrivateKey':
           setWrongPrivateKey(true);
           break;
 
-        case "wrongPublicKey":
+        case 'wrongPublicKey':
           setWrongPublicKey(true);
           break;
 
-        case "wrongKeyPair":
+        case 'wrongKeyPair':
           setKeysError(true);
-          setKeysErrorMessage(t("invalid_key_pair"));
+          setKeysErrorMessage(t('invalid_key_pair'));
           break;
 
-        case "wrongKeyInput":
+        case 'wrongKeyInput':
           setKeysError(true);
-          setKeysErrorMessage(t("invalid_keys_input"));
+          setKeysErrorMessage(t('invalid_keys_input'));
           break;
 
-        case "keysGenerated":
-          startEncryption("secretKey");
+        case 'keysGenerated':
+          startEncryption('secretKey');
           break;
 
-        case "keyPairReady":
-          startEncryption("publicKey");
+        case 'keyPairReady':
+          startEncryption('publicKey');
           break;
 
-        case "filePreparedEnc":
+        case 'filePreparedEnc':
           kickOffEncryption();
           break;
 
-        case "continueEncryption":
+        case 'continueEncryption':
           continueEncryption(e);
           break;
 
-        case "encryptionFinished":
+        case 'encryptionFinished':
           if (numberOfFiles > 1) {
             updateCurrFile();
             file = null;
@@ -615,31 +607,20 @@ export default function EncryptionPanel() {
     <div className={classes.root} {...getRootProps()}>
       <Snackbar
         anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
+          vertical: 'bottom',
+          horizontal: 'left',
         }}
         open={snackBarOpen}
         autoHideDuration={2000}
         onClose={showSnackBar}
       >
-        <Alert severity="success">
-          {snackBarMessage}
-        </Alert>
+        <Alert severity="success">{snackBarMessage}</Alert>
       </Snackbar>
       <Backdrop open={isDragActive} style={{ zIndex: 10 }}>
-        <Typography
-          variant="h2"
-          gutterBottom
-          style={{ color: "#fff", textAlign: "center" }}
-        >
-          <img
-            src="/assets/images/logo2.png"
-            width="100"
-            height="100"
-            alt="hat.sh logo"
-          />
+        <Typography variant="h2" gutterBottom style={{ color: '#fff', textAlign: 'center' }}>
+          <img src="/assets/images/logo2.png" width="100" height="100" alt="hat.sh logo" />
           <br />
-          {t("drop_file_enc")}
+          {t('drop_file_enc')}
         </Typography>
       </Backdrop>
 
@@ -659,15 +640,11 @@ export default function EncryptionPanel() {
             </IconButton>
           }
         >
-          {t("recipient_key_loaded")}
+          {t('recipient_key_loaded')}
         </Alert>
       </Collapse>
 
-      <Stepper
-        activeStep={activeStep}
-        orientation="vertical"
-        className={classes.stepper}
-      >
+      <Stepper activeStep={activeStep} orientation="vertical" className={classes.stepper}>
         <Step key={1}>
           <StepLabel
             StepIconProps={{
@@ -678,23 +655,20 @@ export default function EncryptionPanel() {
               },
             }}
           >
-            {t("choose_files_enc")}
+            {t('choose_files_enc')}
           </StepLabel>
           <StepContent>
             <div className="wrapper p-3" id="encFileWrapper">
               <div
                 className={classes.fileArea}
                 id="encFileArea"
-                style={{ display: Files.length > 0 ? "" : "flex" }}
+                style={{ display: Files.length > 0 ? '' : 'flex' }}
               >
                 <Paper elevation={0} className={classes.filesPaper}>
                   <List dense={true} className={classes.filesList}>
                     {Files.length > 0
                       ? Files.map((file, index) => (
-                          <ListItem
-                            key={index}
-                            className={classes.filesListItem}
-                          >
+                          <ListItem key={index} className={classes.filesListItem}>
                             <ListItemText
                               className={classes.filesListItemText}
                               primary={file.name}
@@ -712,7 +686,7 @@ export default function EncryptionPanel() {
                             </ListItemSecondaryAction>
                           </ListItem>
                         ))
-                      : t("drag_drop_files")}
+                      : t('drag_drop_files')}
                   </List>
                 </Paper>
 
@@ -728,11 +702,9 @@ export default function EncryptionPanel() {
                   <Button
                     className={classes.browseButton}
                     component="span"
-                    startIcon={
-                      Files.length > 0 ? <AddIcon /> : <DescriptionIcon />
-                    }
+                    startIcon={Files.length > 0 ? <AddIcon /> : <DescriptionIcon />}
                   >
-                    {Files.length > 0 ? t("add_files") : t("browse_files")}
+                    {Files.length > 0 ? t('add_files') : t('browse_files')}
                   </Button>
                 </label>
 
@@ -744,11 +716,11 @@ export default function EncryptionPanel() {
                       component="span"
                       startIcon={<RotateLeftIcon />}
                     >
-                      {t("reset")}
+                      {t('reset')}
                     </Button>
 
                     <small className={classes.filesInfo}>
-                      {Files.length} {Files.length > 1 ? t("files") : t("file")}
+                      {Files.length} {Files.length > 1 ? t('files') : t('file')}
                       {Files.length > 1 && <>, {formatBytes(sumFilesSizes)}</>}
                     </small>
                   </>
@@ -765,14 +737,12 @@ export default function EncryptionPanel() {
                   onClick={handleNext}
                   className={`${classes.nextButton} nextBtnHs submitFile`}
                 >
-                  {t("next")}
+                  {t('next')}
                 </Button>
               </div>
             </div>
 
-            <Typography className={classes.offline}>
-              {t("offline_note")}
-            </Typography>
+            <Typography className={classes.offline}>{t('offline_note')}</Typography>
           </StepContent>
         </Step>
 
@@ -786,87 +756,71 @@ export default function EncryptionPanel() {
               },
             }}
           >
-            {encryptionMethod === "secretKey"
-              ? t("enter_password_enc")
-              : t("enter_keys_enc")}
+            {encryptionMethod === 'secretKey' ? t('enter_password_enc') : t('enter_keys_enc')}
           </StepLabel>
 
           <StepContent>
-            <FormControl
-              component="fieldset"
-              style={{ float: "right", marginBottom: "15px" }}
-            >
-              <RadioGroup
-                row
-                value={encryptionMethod}
-                aria-label="encryption options"
-              >
+            <FormControl component="fieldset" style={{ float: 'right', marginBottom: '15px' }}>
+              <RadioGroup row value={encryptionMethod} aria-label="encryption options">
                 <FormControlLabel
                   value="secretKey"
                   control={<Radio color="default" />}
-                  label={t("password")}
+                  label={t('password')}
                   labelPlacement="end"
-                  onChange={() => handleRadioChange("secretKey")}
+                  onChange={() => handleRadioChange('secretKey')}
                 />
                 <FormControlLabel
                   value="publicKey"
                   className="publicKeyInput"
                   control={<Radio color="default" />}
-                  label={t("public_key")}
+                  label={t('public_key')}
                   labelPlacement="end"
-                  onChange={() => handleRadioChange("publicKey")}
+                  onChange={() => handleRadioChange('publicKey')}
                 />
               </RadioGroup>
             </FormControl>
 
-            {encryptionMethod === "secretKey" && (
+            {encryptionMethod === 'secretKey' && (
               <TextField
                 required
                 error={shortPasswordError ? true : false}
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 id="encPasswordInput"
-                label={t("required")}
-                placeholder={t("password")}
+                label={t('required')}
+                placeholder={t('password')}
                 helperText={
                   Password ? (
                     <Tooltip
-                      title={`${t("crackTimeEstimation")} ${
-                        passwordStrengthCheck(Password)[1]
-                      }`}
+                      title={`${t('crackTimeEstimation')} ${passwordStrengthCheck(Password)[1]}`}
                       placement="right"
                       arrow
                     >
                       <span>
-                        {t("password_strength")}
-                        {": "}
+                        {t('password_strength')}
+                        {': '}
                         <strong>{passwordStrengthCheck(Password)[0]}</strong>
                       </span>
                     </Tooltip>
                   ) : (
-                    t("choose_strong_password")
+                    t('choose_strong_password')
                   )
                 }
                 variant="outlined"
-                value={Password ? Password : ""}
+                value={Password ? Password : ''}
                 onChange={(e) => handlePasswordInput(e.target.value)}
                 fullWidth
                 InputProps={{
                   endAdornment: (
                     <>
                       {Password && (
-                        <Tooltip title={t("show_password")} placement="left">
-                          <IconButton
-                            onClick={() => setShowPassword(!showPassword)}
-                          >
+                        <Tooltip title={t('show_password')} placement="left">
+                          <IconButton onClick={() => setShowPassword(!showPassword)}>
                             {showPassword ? <Visibility /> : <VisibilityOff />}
                           </IconButton>
                         </Tooltip>
                       )}
-                      <Tooltip title={t("generate_password")} placement="left">
-                        <IconButton
-                          onClick={generatedPassword}
-                          className="generatePasswordBtn"
-                        >
+                      <Tooltip title={t('generate_password')} placement="left">
+                        <IconButton onClick={generatedPassword} className="generatePasswordBtn">
                           <CachedIcon />
                         </IconButton>
                       </Tooltip>
@@ -876,22 +830,20 @@ export default function EncryptionPanel() {
               />
             )}
 
-            {encryptionMethod === "publicKey" && (
+            {encryptionMethod === 'publicKey' && (
               <>
                 <TextField
                   id="public-key-input"
                   required
                   error={wrongPublicKey ? true : false}
-                  label={
-                    wrongPublicKey ? t("error") : t("recipient_public_key")
-                  }
-                  helperText={wrongPublicKey ? t("wrong_public_key") : ""}
-                  placeholder={t("enter_recipient_public_key")}
+                  label={wrongPublicKey ? t('error') : t('recipient_public_key')}
+                  helperText={wrongPublicKey ? t('wrong_public_key') : ''}
+                  placeholder={t('enter_recipient_public_key')}
                   variant="outlined"
-                  value={PublicKey ? PublicKey : ""}
+                  value={PublicKey ? PublicKey : ''}
                   onChange={(e) => handlePublicKeyInput(e.target.value)}
                   fullWidth
-                  style={{ marginBottom: "15px" }}
+                  style={{ marginBottom: '15px' }}
                   InputProps={{
                     endAdornment: (
                       <>
@@ -903,14 +855,8 @@ export default function EncryptionPanel() {
                           onChange={(e) => loadPublicKey(e.target.files[0])}
                         />
                         <label htmlFor="public-key-file">
-                          <Tooltip
-                            title={t("load_public_key")}
-                            placement="left"
-                          >
-                            <IconButton
-                              aria-label={t("load_public_key")}
-                              component="span"
-                            >
+                          <Tooltip title={t('load_public_key')} placement="left">
+                            <IconButton aria-label={t('load_public_key')} component="span">
                               <AttachFileIcon />
                             </IconButton>
                           </Tooltip>
@@ -922,35 +868,24 @@ export default function EncryptionPanel() {
 
                 <TextField
                   id="private-key-input"
-                  type={showPrivateKey ? "text" : "password"}
+                  type={showPrivateKey ? 'text' : 'password'}
                   required
                   error={wrongPrivateKey ? true : false}
-                  label={
-                    wrongPrivateKey ? t("error") : t("your_private_key_enc")
-                  }
-                  helperText={wrongPrivateKey ? t("wrong_private_key") : ""}
-                  placeholder={t("enter_private_key_enc")}
+                  label={wrongPrivateKey ? t('error') : t('your_private_key_enc')}
+                  helperText={wrongPrivateKey ? t('wrong_private_key') : ''}
+                  placeholder={t('enter_private_key_enc')}
                   variant="outlined"
-                  value={PrivateKey ? PrivateKey : ""}
+                  value={PrivateKey ? PrivateKey : ''}
                   onChange={(e) => handlePrivateKeyInput(e.target.value)}
                   fullWidth
-                  style={{ marginBottom: "15px" }}
+                  style={{ marginBottom: '15px' }}
                   InputProps={{
                     endAdornment: (
                       <>
                         {PrivateKey && (
-                          <Tooltip
-                            title={t("show_private_key")}
-                            placement="left"
-                          >
-                            <IconButton
-                              onClick={() => setShowPrivateKey(!showPrivateKey)}
-                            >
-                              {showPrivateKey ? (
-                                <Visibility />
-                              ) : (
-                                <VisibilityOff />
-                              )}
+                          <Tooltip title={t('show_private_key')} placement="left">
+                            <IconButton onClick={() => setShowPrivateKey(!showPrivateKey)}>
+                              {showPrivateKey ? <Visibility /> : <VisibilityOff />}
                             </IconButton>
                           </Tooltip>
                         )}
@@ -963,14 +898,8 @@ export default function EncryptionPanel() {
                           onChange={(e) => loadPrivateKey(e.target.files[0])}
                         />
                         <label htmlFor="private-key-file">
-                          <Tooltip
-                            title={t("load_private_key")}
-                            placement="left"
-                          >
-                            <IconButton
-                              aria-label={t("load_private_key")}
-                              component="span"
-                            >
+                          <Tooltip title={t('load_private_key')} placement="left">
+                            <IconButton aria-label={t('load_private_key')} component="span">
                               <AttachFileIcon />
                             </IconButton>
                           </Tooltip>
@@ -994,33 +923,32 @@ export default function EncryptionPanel() {
                       className={classes.backButton}
                       fullWidth
                     >
-                      {t("back")}
+                      {t('back')}
                     </Button>
                   </Grid>
                   <Grid item xs>
                     <Button
                       disabled={
-                        (encryptionMethod === "secretKey" && !Password) ||
-                        (encryptionMethod === "publicKey" &&
-                          (!PublicKey || !PrivateKey))
+                        (encryptionMethod === 'secretKey' && !Password) ||
+                        (encryptionMethod === 'publicKey' && (!PublicKey || !PrivateKey))
                       }
                       variant="contained"
                       onClick={handleMethodStep}
                       className={`${classes.nextButton} nextBtnHs submitKeys`}
                       fullWidth
                     >
-                      {t("next")}
+                      {t('next')}
                     </Button>
                   </Grid>
                 </Grid>
                 <br />
 
-                {encryptionMethod === "publicKey" && keysError && (
+                {encryptionMethod === 'publicKey' && keysError && (
                   <Alert severity="error">{keysErrorMessage}</Alert>
                 )}
 
-                {encryptionMethod === "secretKey" && shortPasswordError && (
-                  <Alert severity="error">{t("short_password")}</Alert>
+                {encryptionMethod === 'secretKey' && shortPasswordError && (
+                  <Alert severity="error">{t('short_password')}</Alert>
                 )}
               </div>
             </div>
@@ -1037,17 +965,13 @@ export default function EncryptionPanel() {
               },
             }}
           >
-            {t("download_encrypted_files")}
+            {t('download_encrypted_files')}
           </StepLabel>
           <StepContent>
             {Files.length > 0 && (
               <Alert severity="success" icon={<LockOutlinedIcon />}>
-                <strong>
-                  {Files.length > 1 ? Files.length : Files[0].name}
-                </strong>{" "}
-                {Files.length > 1
-                  ? t("files_ready_to_download")
-                  : t("ready_to_download")}
+                <strong>{Files.length > 1 ? Files.length : Files[0].name}</strong>{' '}
+                {Files.length > 1 ? t('files_ready_to_download') : t('ready_to_download')}
               </Alert>
             )}
 
@@ -1059,7 +983,7 @@ export default function EncryptionPanel() {
                     onClick={handleBack}
                     className={classes.backButton}
                   >
-                    {t("back")}
+                    {t('back')}
                   </Button>
                 </Grid>
                 <Grid item xs>
@@ -1073,10 +997,7 @@ export default function EncryptionPanel() {
                     className={`${classes.nextButton} nextBtnHs`}
                     startIcon={
                       isDownloading ? (
-                        <CircularProgress
-                          size={24}
-                          className={classes.buttonProgress}
-                        />
+                        <CircularProgress size={24} className={classes.buttonProgress} />
                       ) : (
                         <GetAppIcon />
                       )
@@ -1087,15 +1008,13 @@ export default function EncryptionPanel() {
                       onClick={(e) => handleEncryptedFilesDownload(e)}
                       className="downloadFile"
                       style={{
-                        width: "100%",
-                        textDecoration: "none",
+                        width: '100%',
+                        textDecoration: 'none',
                       }}
                     >
                       {isDownloading
-                        ? `${currFileState + 1}/${numberOfFiles} ${t(
-                            "downloading_file"
-                          )}`
-                        : t("encrypted_files")}
+                        ? `${currFileState + 1}/${numberOfFiles} ${t('downloading_file')}`
+                        : t('encrypted_files')}
                     </a>
                   </Button>
                 </Grid>
@@ -1104,7 +1023,7 @@ export default function EncryptionPanel() {
 
               {isDownloading && (
                 <Alert variant="outlined" severity="info">
-                  {t("page_close_alert")}
+                  {t('page_close_alert')}
                 </Alert>
               )}
             </div>
@@ -1113,78 +1032,71 @@ export default function EncryptionPanel() {
       </Stepper>
       {activeStep === 3 && (
         <Paper elevation={0} className={classes.resetContainer}>
-          <Alert
-            variant="outlined"
-            severity="success"
-            style={{ border: "none" }}
-          >
-            <AlertTitle>{t("success")}</AlertTitle>
-            {t("success_downloaded_files_enc")}
-            {encryptionMethod === "publicKey" && (
+          <Alert variant="outlined" severity="success" style={{ border: 'none' }}>
+            <AlertTitle>{t('success')}</AlertTitle>
+            {t('success_downloaded_files_enc')}
+            {encryptionMethod === 'publicKey' && (
               <>
                 <br />
                 <br />
                 <ul>
-                  <li>{t("after_enc_note_one")}</li>
-                  <li>{t("after_enc_note_two")}</li>
+                  <li>{t('after_enc_note_one')}</li>
+                  <li>{t('after_enc_note_two')}</li>
                 </ul>
               </>
             )}
           </Alert>
 
           <Grid container spacing={1}>
-            {encryptionMethod === "secretKey" && (
+            {encryptionMethod === 'secretKey' && (
               <Grid item xs={12} sm={6}>
                 <Button
-                                      onClick={() => {
-                      try {
-                        if (navigator.clipboard && window.isSecureContext) {
-                          navigator.clipboard.writeText(Password);
-                        } else {
-                          // Fallback für ältere Browser oder nicht-secure Kontext
-                          const textArea = document.createElement("textarea");
-                          textArea.value = Password;
-                          textArea.style.position = "fixed";
-                          textArea.style.left = "-999999px";
-                          textArea.style.top = "-999999px";
-                          document.body.appendChild(textArea);
-                          textArea.focus();
-                          textArea.select();
-                          document.execCommand('copy');
-                          document.body.removeChild(textArea);
-                        }
-                        setSnackBarMessage(t("password_copied"));
-                        showSnackBar();
-                      } catch (err) {
-                        console.error('Copy failed:', err);
+                  onClick={() => {
+                    try {
+                      if (navigator.clipboard && window.isSecureContext) {
+                        navigator.clipboard.writeText(Password);
+                      } else {
+                        // Fallback für ältere Browser oder nicht-secure Kontext
+                        const textArea = document.createElement('textarea');
+                        textArea.value = Password;
+                        textArea.style.position = 'fixed';
+                        textArea.style.left = '-999999px';
+                        textArea.style.top = '-999999px';
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
                       }
-                    }}
+                      setSnackBarMessage(t('password_copied'));
+                      showSnackBar();
+                    } catch (err) {
+                      console.error('Copy failed:', err);
+                    }
+                  }}
                   className={`${classes.button} copyPassword`}
                   variant="outlined"
                   startIcon={<FileCopyIcon />}
                   fullWidth
-                  style={{ textTransform: "none" }}
+                  style={{ textTransform: 'none' }}
                 >
-                  {t("copy_password")}
+                  {t('copy_password')}
                 </Button>
               </Grid>
             )}
 
-            {encryptionMethod === "publicKey" && (
+            {encryptionMethod === 'publicKey' && (
               <Grid item xs={12} sm={6}>
-                <Tooltip
-                  title={t("create_shareable_link_tooltip")}
-                  placement="bottom"
-                >
+                <Tooltip title={t('create_shareable_link_tooltip')} placement="bottom">
                   <Button
                     onClick={() => createShareableLink()}
                     className={classes.button}
                     variant="outlined"
                     startIcon={<LinkIcon />}
                     fullWidth
-                    style={{ textTransform: "none" }}
+                    style={{ textTransform: 'none' }}
                   >
-                    {t("create_shareable_link")}
+                    {t('create_shareable_link')}
                   </Button>
                 </Tooltip>
               </Grid>
@@ -1197,18 +1109,16 @@ export default function EncryptionPanel() {
                 variant="outlined"
                 startIcon={<RefreshIcon />}
                 fullWidth
-                style={{ textTransform: "none" }}
+                style={{ textTransform: 'none' }}
               >
-                {t("encrypt_more_files")}
+                {t('encrypt_more_files')}
               </Button>
             </Grid>
 
-            {encryptionMethod === "publicKey" && shareableLink && (
+            {encryptionMethod === 'publicKey' && shareableLink && (
               <TextField
                 style={{ marginTop: 15 }}
-                defaultValue={
-                  shareableLink != undefined ? shareableLink : shareableLink
-                }
+                defaultValue={shareableLink != undefined ? shareableLink : shareableLink}
                 InputProps={{
                   readOnly: true,
                   classes: {
@@ -1218,33 +1128,31 @@ export default function EncryptionPanel() {
                   },
                   endAdornment: (
                     <>
-                      <Tooltip title={t("copy_link")} placement="left">
+                      <Tooltip title={t('copy_link')} placement="left">
                         <IconButton
-                                                      onClick={() => {
-                              try {
-                                if (navigator.clipboard && window.isSecureContext) {
-                                  navigator.clipboard.writeText(shareableLink);
-                                } else {
-                                  // Fallback für ältere Browser oder nicht-secure Kontext
-                                  const textArea = document.createElement("textarea");
-                                  textArea.value = shareableLink;
-                                  textArea.style.position = "fixed";
-                                  textArea.style.left = "-999999px";
-                                  textArea.style.top = "-999999px";
-                                  document.body.appendChild(textArea);
-                                  textArea.focus();
-                                  textArea.select();
-                                  document.execCommand('copy');
-                                  document.body.removeChild(textArea);
-                                }
-                                setSnackBarMessage(
-                                  t("create_shareable_link_copied")
-                                );
-                                showSnackBar();
-                              } catch (err) {
-                                console.error('Copy failed:', err);
+                          onClick={() => {
+                            try {
+                              if (navigator.clipboard && window.isSecureContext) {
+                                navigator.clipboard.writeText(shareableLink);
+                              } else {
+                                // Fallback für ältere Browser oder nicht-secure Kontext
+                                const textArea = document.createElement('textarea');
+                                textArea.value = shareableLink;
+                                textArea.style.position = 'fixed';
+                                textArea.style.left = '-999999px';
+                                textArea.style.top = '-999999px';
+                                document.body.appendChild(textArea);
+                                textArea.focus();
+                                textArea.select();
+                                document.execCommand('copy');
+                                document.body.removeChild(textArea);
                               }
-                            }}
+                              setSnackBarMessage(t('create_shareable_link_copied'));
+                              showSnackBar();
+                            } catch (err) {
+                              console.error('Copy failed:', err);
+                            }
+                          }}
                         >
                           <FileCopyIcon />
                         </IconButton>
@@ -1252,7 +1160,7 @@ export default function EncryptionPanel() {
                     </>
                   ),
                 }}
-                helperText={t("create_shareable_link_note")}
+                helperText={t('create_shareable_link_note')}
                 variant="outlined"
                 fullWidth
               />

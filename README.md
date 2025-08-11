@@ -7,7 +7,6 @@
 
 <div align="center">
 
-
 </div>
 
 ---
@@ -16,7 +15,7 @@
 
 V2 of hat.sh introduced memory efficient in-browser large file chunked encryption using streams with libsodium.
 
-*A FORK*
+_A FORK_
 
 ## Usage
 
@@ -70,11 +69,11 @@ Safari and Mobile browsers are limited to single 1GB files, due to lack of suppo
 
 ## Official running instances of the app
 
-| #   | URL                                                |
-| --- | -------------------------------------------------- |
-| 1   | [hat.vik.lol](https://hat.vik.lol/)                |
-| 2   | [hat.now.sh](https://hat.now.sh/)           (OLD)  |
-| 2   | [hat.vercel.app](https://hat.vercel.app/)   (OLD)  |
+| #   | URL                                             |
+| --- | ----------------------------------------------- |
+| 1   | [hat.vik.lol](https://hat.vik.lol/)             |
+| 2   | [hat.now.sh](https://hat.now.sh/) (OLD)         |
+| 2   | [hat.vercel.app](https://hat.vercel.app/) (OLD) |
 
 <br>
 

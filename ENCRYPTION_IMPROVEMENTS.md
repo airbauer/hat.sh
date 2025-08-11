@@ -25,6 +25,7 @@ Salt generation has been improved by incorporating additional entropy sources:
 ### 3. Intelligent Fallbacks
 
 All new features include secure fallbacks:
+
 - If browser features are unavailable → default behavior
 - If devices are too weak → reduced parameters
 - Full backward compatibility
@@ -137,5 +138,6 @@ const capabilities = checkBrowserCapabilities();
 ### Feedback
 
 Please report issues or suggestions via:
+
 - GitHub Issues
 - Email: airbauer@proton.me

@@ -1,30 +1,30 @@
 /* eslint-disable @next/next/no-img-element */
-import { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import { IconButton, Tooltip, Button, TextField } from "@material-ui/core";
-import { getTranslations as t } from "../../locales";
-import FileCopyIcon from "@material-ui/icons/FileCopy";
-import QRCode from "qrcode.react";
+import { useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import { IconButton, Tooltip, Button, TextField } from '@material-ui/core';
+import { getTranslations as t } from '../../locales';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+import QRCode from 'qrcode.react';
 
 const useStyles = makeStyles((theme) => ({
   form: {
-    display: "flex",
-    flexDirection: "column",
-    margin: "auto",
-    width: "fit-content",
+    display: 'flex',
+    flexDirection: 'column',
+    margin: 'auto',
+    width: 'fit-content',
     marginBottom: 20,
   },
   topScrollPaper: {
-    alignItems: "start",
-    marginTop: "10vh",
+    alignItems: 'start',
+    marginTop: '10vh',
   },
   topPaperScrollBody: {
-    verticalAlign: "middle",
+    verticalAlign: 'middle',
   },
 }));
 
@@ -32,9 +32,9 @@ const QuickResponseCode = (props) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 
-  let url = "";
-  if (typeof window !== "undefined") {
-    url = window.location.origin + "/?tab=encryption&publicKey=" + props.publicKey;
+  let url = '';
+  if (typeof window !== 'undefined') {
+    url = window.location.origin + '/?tab=encryption&publicKey=' + props.publicKey;
   }
 
   const handleClickOpen = () => {
@@ -47,14 +47,9 @@ const QuickResponseCode = (props) => {
 
   return (
     <>
-      <Tooltip title={t("generate_qr_code")} placement="bottom">
+      <Tooltip title={t('generate_qr_code')} placement="bottom">
         <IconButton onClick={handleClickOpen}>
-          <svg
-            enableBackground="new 0 0 24 24"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-          >
+          <svg enableBackground="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24">
             <g>
               <rect fill="none" height="24" width="24" />
             </g>
@@ -90,16 +85,20 @@ const QuickResponseCode = (props) => {
         <DialogContent>
           <div className={classes.form}>
             <QRCode
-              style={{ borderRadius: 8, marginTop:15, boxShadow: "0px 0px 35px 2px rgba(0,0,0,0.2)" }}
+              style={{
+                borderRadius: 8,
+                marginTop: 15,
+                boxShadow: '0px 0px 35px 2px rgba(0,0,0,0.2)',
+              }}
               value={url}
               size={200}
-              bgColor={"#ffffff"}
-              fgColor={"#000000"}
-              level={"M"}
+              bgColor={'#ffffff'}
+              fgColor={'#000000'}
+              level={'M'}
               includeMargin={true}
-              renderAs={"canvas"}
+              renderAs={'canvas'}
               imageSettings={{
-                src: "/assets/icons/qr-logo.png",
+                src: '/assets/icons/qr-logo.png',
                 x: null,
                 y: null,
                 height: 40,
@@ -110,11 +109,11 @@ const QuickResponseCode = (props) => {
           </div>
 
           <DialogContentText>
-            <small>* {t("qr_code_note_one")}</small>
+            <small>* {t('qr_code_note_one')}</small>
             <br />
-            <small>* {t("qr_code_note_two")}</small>
+            <small>* {t('qr_code_note_two')}</small>
             <br />
-            <small>* {t("qr_code_note_three")}</small>
+            <small>* {t('qr_code_note_three')}</small>
           </DialogContentText>
 
           {url && (
@@ -130,7 +129,7 @@ const QuickResponseCode = (props) => {
                 },
                 endAdornment: (
                   <>
-                    <Tooltip title={t("copy_link")} placement="left">
+                    <Tooltip title={t('copy_link')} placement="left">
                       <IconButton
                         onClick={() => {
                           try {
@@ -138,11 +137,11 @@ const QuickResponseCode = (props) => {
                               navigator.clipboard.writeText(url);
                             } else {
                               // Fallback für ältere Browser oder nicht-secure Kontext
-                              const textArea = document.createElement("textarea");
+                              const textArea = document.createElement('textarea');
                               textArea.value = url;
-                              textArea.style.position = "fixed";
-                              textArea.style.left = "-999999px";
-                              textArea.style.top = "-999999px";
+                              textArea.style.position = 'fixed';
+                              textArea.style.left = '-999999px';
+                              textArea.style.top = '-999999px';
                               document.body.appendChild(textArea);
                               textArea.focus();
                               textArea.select();
@@ -160,7 +159,7 @@ const QuickResponseCode = (props) => {
                   </>
                 ),
               }}
-              helperText={t("create_shareable_link_note")}
+              helperText={t('create_shareable_link_note')}
               variant="outlined"
               fullWidth
             />
@@ -168,7 +167,7 @@ const QuickResponseCode = (props) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary" autoFocus>
-            {t("close")}
+            {t('close')}
           </Button>
         </DialogActions>
       </Dialog>

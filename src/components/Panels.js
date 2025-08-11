@@ -1,31 +1,31 @@
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
-import PropTypes from "prop-types";
-import EncryptionPanel from "./EncryptionPanel";
-import DecryptionPanel from "./DecryptionPanel";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Container from "@material-ui/core/Container";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import { getTranslations as t } from "../../locales";
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import PropTypes from 'prop-types';
+import EncryptionPanel from './EncryptionPanel';
+import DecryptionPanel from './DecryptionPanel';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Container from '@material-ui/core/Container';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import { getTranslations as t } from '../../locales';
 
 const StyledTabs = withStyles({
   indicator: {
-    display: "none",
+    display: 'none',
   },
 })((props) => <Tabs {...props} TabIndicatorProps={{ children: <span /> }} />);
 
 const StyledTab = withStyles((theme) => ({
   root: {
-    textTransform: "none",
-    padding: "8px",
-    transition: "background-color 0.2s ease-out, color 0.01s",
+    textTransform: 'none',
+    padding: '8px',
+    transition: 'background-color 0.2s ease-out, color 0.01s',
 
-    "&$selected": {
+    '&$selected': {
       backgroundColor: theme.palette.white.main,
-      boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px",
-      borderRadius: "8px",
+      boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px',
+      borderRadius: '8px',
     },
   },
   selected: {},
@@ -33,13 +33,13 @@ const StyledTab = withStyles((theme) => ({
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    maxWidth: "768px",
+    maxWidth: '768px',
   },
 
   bar: {
     marginTop: 35,
     backgroundColor: theme.palette.gallery.main,
-    borderRadius: "8px",
+    borderRadius: '8px',
     padding: 8,
   },
 
@@ -80,8 +80,8 @@ export default function CustomizedTabs() {
   const router = useRouter();
   const query = router.query;
   const [value, setValue] = useState(0);
-  const encryption = { tab: 0, label: t("encryption") };
-  const decryption = { tab: 1, label: t("decryption") };
+  const encryption = { tab: 0, label: t('encryption') };
+  const decryption = { tab: 1, label: t('decryption') };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -89,11 +89,11 @@ export default function CustomizedTabs() {
   };
 
   useEffect(() => {
-    if (query.tab && query.tab === "encryption") {
+    if (query.tab && query.tab === 'encryption') {
       setValue(encryption.tab);
     }
 
-    if (query.tab && query.tab === "decryption") {
+    if (query.tab && query.tab === 'decryption') {
       setValue(decryption.tab);
     }
   }, [decryption.tab, encryption.tab, query.tab]);
@@ -102,29 +102,16 @@ export default function CustomizedTabs() {
     <>
       <Container className={classes.root}>
         <AppBar position="static" className={classes.bar} elevation={0}>
-          <StyledTabs
-            value={value}
-            onChange={handleChange}
-            variant="fullWidth"
-            centered
-          >
+          <StyledTabs value={value} onChange={handleChange} variant="fullWidth" centered>
             <StyledTab label={encryption.label} className={classes.tab} />
             <StyledTab label={decryption.label} className={classes.tab} />
           </StyledTabs>
         </AppBar>
 
-        <TabPanel
-          value={value}
-          index={encryption.tab}
-          className={classes.TabPanel}
-        >
+        <TabPanel value={value} index={encryption.tab} className={classes.TabPanel}>
           <EncryptionPanel />
         </TabPanel>
-        <TabPanel
-          value={value}
-          index={decryption.tab}
-          className={classes.TabPanel}
-        >
+        <TabPanel value={value} index={decryption.tab} className={classes.TabPanel}>
           <DecryptionPanel />
         </TabPanel>
       </Container>

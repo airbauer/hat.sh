@@ -1,9 +1,9 @@
 # Hat.sh Translation Guide
 
-### In order to add a translation to the app, please follow these steps: 
+### In order to add a translation to the app, please follow these steps:
 
 1. create a folder in the `locales` directory, where the name of this new folder should contain the code of the language. (e.g `de_DE` for German language or `nl_NL` for Dutch).
-language codes can be found [here](https://gist.github.com/ndbroadbent/588fefab8e0f1b459fcec8181b41b39c).
+   language codes can be found [here](https://gist.github.com/ndbroadbent/588fefab8e0f1b459fcec8181b41b39c).
 
 2. create `index.js` file in the new directory.
 
@@ -34,7 +34,7 @@ export default en_US;
 
 <br>
 
-Copy `en_US` file content and create new language folder and file : 
+Copy `en_US` file content and create new language folder and file :
 
 `de_DE/index.js`
 

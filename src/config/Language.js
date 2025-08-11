@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import { Button, Hidden } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
-import { checkLocale } from "../../locales";
-import { getTranslations as t } from "../../locales";
-import locales from "../../locales/locales";
+import { useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import { Button, Hidden } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import { checkLocale } from '../../locales';
+import { getTranslations as t } from '../../locales';
+import locales from '../../locales/locales';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -25,7 +25,7 @@ const Language = () => {
   const handleLanguageChange = (e) => {
     setLanguage(e.target.value);
     if (localStorage) {
-      localStorage.setItem("language", e.target.value);
+      localStorage.setItem('language', e.target.value);
     }
     window.location.reload(true);
   };
@@ -33,12 +33,8 @@ const Language = () => {
   return (
     <>
       <FormControl variant="outlined" className={classes.formControl}>
-        <InputLabel>{t("language")}</InputLabel>
-        <Select
-          value={language}
-          onChange={handleLanguageChange}
-          label={t("language")}
-        >
+        <InputLabel>{t('language')}</InputLabel>
+        <Select value={language} onChange={handleLanguageChange} label={t('language')}>
           {Object.entries(locales).map(([code, name]) => (
             <MenuItem key={code} value={code}>
               {name.language_name}
@@ -56,11 +52,11 @@ const Language = () => {
               href="https://github.com/airbauer/hat.sh/blob/master/TRANSLATION.md"
               target="_blank"
             >
-              {t("guide")}
+              {t('guide')}
             </Button>
           }
         >
-          {t("help_translate")}
+          {t('help_translate')}
         </Alert>
       </Hidden>
     </>

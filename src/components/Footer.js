@@ -1,63 +1,63 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
-import { useState, useEffect } from "react";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
-import FileCopyIcon from "@material-ui/icons/FileCopy";
-import Link from "@material-ui/core/Link";
-import { Chip, Avatar, Hidden } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import { IconButton, Tooltip, TextField } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
-import Snackbar from "@material-ui/core/Snackbar";
-import { getTranslations as t } from "../../locales";
-import QRCode from "qrcode.react";
+import { useState, useEffect } from 'react';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+import Link from '@material-ui/core/Link';
+import { Chip, Avatar, Hidden } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import { IconButton, Tooltip, TextField } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import Snackbar from '@material-ui/core/Snackbar';
+import { getTranslations as t } from '../../locales';
+import QRCode from 'qrcode.react';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    marginTop: "auto",
+    marginTop: 'auto',
   },
 
   footer: {
-    textAlign: "center",
+    textAlign: 'center',
     color: theme.palette.diamondBlack.main,
     padding: theme.spacing(3, 2),
   },
 
   topScrollPaper: {
-    alignItems: "start",
-    marginTop: "10vh",
+    alignItems: 'start',
+    marginTop: '10vh',
   },
   topPaperScrollBody: {
-    verticalAlign: "middle",
+    verticalAlign: 'middle',
   },
 
   chip: {
     marginTop: 5,
-    border: "none",
+    border: 'none',
     borderRadius: 8,
-    textTransform: "none",
-    boxShadow: "none",
+    textTransform: 'none',
+    boxShadow: 'none',
     color: theme.palette.diamondBlack.main,
     backgroundColor: theme.palette.alto.light,
-    "&:hover": {
+    '&:hover': {
       backgroundColor: theme.palette.alto.main,
     },
-    "&:focus": {
+    '&:focus': {
       backgroundColor: theme.palette.alto.main,
-      boxShadow: "none",
+      boxShadow: 'none',
     },
-    transition: "background-color 0.2s ease-out, color 0.01s",
+    transition: 'background-color 0.2s ease-out, color 0.01s',
   },
 
   monIcon: {
@@ -65,10 +65,10 @@ const useStyles = makeStyles((theme) => ({
   },
 
   qr: {
-    display: "flex",
-    flexDirection: "column",
-    margin: "auto",
-    width: "fit-content",
+    display: 'flex',
+    flexDirection: 'column',
+    margin: 'auto',
+    width: 'fit-content',
     marginBottom: 20,
   },
 }));
@@ -93,35 +93,33 @@ const TabPanel = (props) => {
 export default function Footer() {
   const classes = useStyles();
   const [tabValue, setTabValue] = useState(0);
-  const [currAvatar, setCurrAvatar] = useState("xmr");
+  const [currAvatar, setCurrAvatar] = useState('xmr');
   const [donateDialog, setDonateDialog] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
 
   const cryptoAddrs = [
     {
-      type: "monero",
-      alt: "xmr",
-      addr: "44uSqDb3TJajGzcKADn6xwjmDhU6xXeKAFcKAujUodboYE9bWaHN1awDCfcz65DaidVng7dtGcffbPFgqKrdy1EiKxRcXzf",
+      type: 'monero',
+      alt: 'xmr',
+      addr: '44uSqDb3TJajGzcKADn6xwjmDhU6xXeKAFcKAujUodboYE9bWaHN1awDCfcz65DaidVng7dtGcffbPFgqKrdy1EiKxRcXzf',
     },
     {
-      type: "bitcoin",
-      alt: "btc",
-      addr: "bc1qlfnq8nu2k84h3jth7a27khaq0p2l2gvtyl2dv6",
+      type: 'bitcoin',
+      alt: 'btc',
+      addr: 'bc1qlfnq8nu2k84h3jth7a27khaq0p2l2gvtyl2dv6',
     },
     {
-      type: "ethereum",
-      alt: "eth",
-      addr: "0x5Bf70670Ca8A4907Fb2EA8C98Af0e50e5aBC7968",
+      type: 'ethereum',
+      alt: 'eth',
+      addr: '0x5Bf70670Ca8A4907Fb2EA8C98Af0e50e5aBC7968',
     },
   ];
 
   const handleSnackClose = (event, reason) => {
-    if (reason === "clickaway") return;
+    if (reason === 'clickaway') return;
     setSnackOpen(false);
     // Don't call handleSnackOpen here to avoid multiple timeouts
   };
-
-
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -141,9 +139,7 @@ export default function Footer() {
     }, 60000);
 
     const interval = setInterval(() => {
-      setCurrAvatar(
-        cryptoAddrs[Math.floor(Math.random() * cryptoAddrs.length)].alt
-      );
+      setCurrAvatar(cryptoAddrs[Math.floor(Math.random() * cryptoAddrs.length)].alt);
     }, 10000);
 
     // Cleanup function to clear interval and timeout when component unmounts
@@ -158,23 +154,16 @@ export default function Footer() {
       <footer className={classes.footer}>
         <Container maxWidth="sm">
           <Typography variant="body1">
-            Furtherdeveloped by{" "}
-            <Link
-              href="https://github.com/airbauer"
-              target="_blank"
-              rel="noopener"
-              color="inherit"
-            >
-              {"AIRbauer"}
+            Furtherdeveloped by{' '}
+            <Link href="https://github.com/airbauer" target="_blank" rel="noopener" color="inherit">
+              {'AIRbauer'}
             </Link>
           </Typography>
 
           <Chip
             size="small"
             className={classes.chip}
-            avatar={
-              <Avatar src={`/assets/icons/${currAvatar}-logo.png`}></Avatar>
-            }
+            avatar={<Avatar src={`/assets/icons/${currAvatar}-logo.png`}></Avatar>}
             label="Donations Accepted"
             clickable
             onClick={() => handleClickOpen()}
@@ -197,14 +186,13 @@ export default function Footer() {
               paperScrollBody: classes.topPaperScrollBody,
             }}
           >
-            <DialogTitle>{"Donations"}</DialogTitle>
+            <DialogTitle>{'Donations'}</DialogTitle>
 
             <DialogContent>
               <Hidden xsDown>
-                <DialogContentText style={{ textAlign: "center" }}>
-                  Hat.vik.lol is an open-source application. The project is
-                  maintained in my free time. Donations of any size are
-                  appreciated.
+                <DialogContentText style={{ textAlign: 'center' }}>
+                  Hat.vik.lol is an open-source application. The project is maintained in my free
+                  time. Donations of any size are appreciated.
                 </DialogContentText>
               </Hidden>
 
@@ -228,14 +216,14 @@ export default function Footer() {
                       style={{
                         borderRadius: 8,
                         margin: 10,
-                        boxShadow: "0px 0px 35px 2px rgba(0,0,0,0.2)",
+                        boxShadow: '0px 0px 35px 2px rgba(0,0,0,0.2)',
                       }}
                       value={`${res.type}:${res.addr}`}
                       size={200}
-                      bgColor={"#ffffff"}
-                      fgColor={"#000000"}
-                      level={"M"}
-                      renderAs={"canvas"}
+                      bgColor={'#ffffff'}
+                      fgColor={'#000000'}
+                      level={'M'}
+                      renderAs={'canvas'}
                       includeMargin={true}
                       imageSettings={{
                         src: `/assets/icons/${res.alt}-logo.png`,
@@ -263,11 +251,11 @@ export default function Footer() {
                                     navigator.clipboard.writeText(res.addr);
                                   } else {
                                     // Fallback für ältere Browser oder nicht-secure Kontext
-                                    const textArea = document.createElement("textarea");
+                                    const textArea = document.createElement('textarea');
                                     textArea.value = res.addr;
-                                    textArea.style.position = "fixed";
-                                    textArea.style.left = "-999999px";
-                                    textArea.style.top = "-999999px";
+                                    textArea.style.position = 'fixed';
+                                    textArea.style.left = '-999999px';
+                                    textArea.style.top = '-999999px';
                                     document.body.appendChild(textArea);
                                     textArea.focus();
                                     textArea.select();
@@ -292,20 +280,12 @@ export default function Footer() {
               ))}
             </DialogContent>
             <DialogActions>
-              <Button
-                style={{ marginBottom: 1 }}
-                href="https://ko-fi.com/airbauer"
-                target="_blank"
-              >
-                <img
-                  src="/assets/icons/ko-fi.png"
-                  width="200"
-                  alt="open collective"
-                ></img>
+              <Button style={{ marginBottom: 1 }} href="https://ko-fi.com/airbauer" target="_blank">
+                <img src="/assets/icons/ko-fi.png" width="200" alt="open collective"></img>
               </Button>
-              <div style={{ flex: "1 0 0" }} />
+              <div style={{ flex: '1 0 0' }} />
               <Button onClick={handleClose} color="primary">
-                {t("close")}
+                {t('close')}
               </Button>
             </DialogActions>
           </Dialog>
@@ -316,8 +296,8 @@ export default function Footer() {
           <Snackbar
             style={{ zIndex: 1 }}
             anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "right",
+              vertical: 'bottom',
+              horizontal: 'right',
             }}
             open={snackOpen}
             autoHideDuration={10000}
@@ -327,12 +307,7 @@ export default function Footer() {
               severity="info"
               action={
                 <Button color="inherit" size="small" onClick={handleClickOpen}>
-                  <svg
-                    enableBackground="new 0 0 24 24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                  >
+                  <svg enableBackground="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24">
                     <g>
                       <rect fill="none" height="24" width="24" />
                     </g>
@@ -353,7 +328,7 @@ export default function Footer() {
                 </Button>
               }
             >
-              {t("donation_message")}
+              {t('donation_message')}
             </Alert>
           </Snackbar>
         )}

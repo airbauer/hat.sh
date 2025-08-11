@@ -1,24 +1,24 @@
-import { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import SettingsIcon from "@material-ui/icons/Settings";
-import Language from "../config/Language";
-import { DarkMode } from "../config/Theme";
-import { getTranslations as t } from "../../locales";
+import { useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import SettingsIcon from '@material-ui/icons/Settings';
+import Language from '../config/Language';
+import { DarkMode } from '../config/Theme';
+import { getTranslations as t } from '../../locales';
 
 const useStyles = makeStyles((theme) => ({
   topScrollPaper: {
-    alignItems: "start",
-    marginTop: "20vh",
+    alignItems: 'start',
+    marginTop: '20vh',
   },
   topPaperScrollBody: {
-    verticalAlign: "middle",
+    verticalAlign: 'middle',
   },
 }));
 
@@ -63,10 +63,7 @@ const Settings = () => {
 
           <Language />
 
-          <DialogContentText
-            id="alert-dialog-description"
-            style={{ marginTop: 15 }}
-          >
+          <DialogContentText id="alert-dialog-description" style={{ marginTop: 15 }}>
             {t('change_appearance')} :
           </DialogContentText>
 

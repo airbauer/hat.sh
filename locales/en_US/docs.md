@@ -40,6 +40,7 @@ The libsodium library is used for all cryptographic algorithms. [Technical detai
 # [Installation](#installation)
 
 ---
+
 It's easy to self host and deploy hat.sh, you can do that either with npm or docker
 
 If you wish to self host the app please follow these instructions:
@@ -179,7 +180,6 @@ hat.sh is also available as a Docker image. You can find it on [Docker Hub].
 
 <br>
 
-
 # [Usage](#usage)
 
 ---
@@ -252,7 +252,6 @@ Safari and Mobile browsers are limited to a single file with maximum size of 1GB
 ### Choosing Passwords
 
 The majority of individuals struggle to create and remember passwords, resulting in weak passwords and password reuse. Password-based encryption is substantially less safe as a result of these improper practices. That's why it is recommended to use the built in password generator and use a password manager like [Bitwarden], where you are able to store the safe password.
-
 
 If you want to choose a password that you are able to memorize then you should type a passphrase made of 8 words or more.
 
@@ -431,7 +430,7 @@ let key = sodium.crypto_pwhash(
   salt,
   sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
   sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
-  sodium.crypto_pwhash_ALG_ARGON2ID13
+  sodium.crypto_pwhash_ALG_ARGON2ID13,
 );
 ```
 
@@ -476,7 +475,7 @@ let encryptedChunk = sodium.crypto_secretstream_xchacha20poly1305_push(
   state,
   new Uint8Array(chunk),
   null,
-  tag
+  tag,
 );
 
 stream.enqueue(signature, salt, header, encryptedChunk);
@@ -511,10 +510,7 @@ the XChaCha20 stream cipher Poly1305 MAC authentication are used for encryption.
 ```javascript
 let state = sodium.crypto_secretstream_xchacha20poly1305_init_pull(header, key);
 
-let result = sodium.crypto_secretstream_xchacha20poly1305_pull(
-  state,
-  new Uint8Array(chunk)
-);
+let result = sodium.crypto_secretstream_xchacha20poly1305_pull(state, new Uint8Array(chunk));
 
 if (result) {
   let decryptedChunk = result.message;
@@ -549,7 +545,7 @@ If the ciphertext or the authentication tag appear to be invalid it returns an e
 ```javascript
 let password = sodium.to_base64(
   sodium.randombytes_buf(16),
-  sodium.base64_variants.URLSAFE_NO_PADDING
+  sodium.base64_variants.URLSAFE_NO_PADDING,
 );
 return password;
 ```
@@ -574,6 +570,7 @@ let keys = {
 };
 return keys;
 ```
+
 </div>
 
 The `crypto_kx_keypair()` function randomly generates a secret key and a corresponding public key. The public key is put into publicKey and the secret key into privateKey. both of 256 bits.
@@ -586,9 +583,10 @@ The `crypto_kx_keypair()` function randomly generates a secret key and a corresp
 let key = sodium.crypto_kx_client_session_keys(
   sodium.crypto_scalarmult_base(privateKey),
   privateKey,
-  publicKey
+  publicKey,
 );
 ```
+
 </div>
 
 Using the key exchange API, two parties can securely compute a set of shared keys using their peer's public key and their own secret key.
@@ -622,7 +620,7 @@ Internally, XChaCha20 works like a block cipher used in counter mode. It uses th
 
 <br>
 
-[//]: # "links"
+[//]: # 'links'
 [xchacha20-poly1305]: https://libsodium.gitbook.io/doc/secret-key_cryptography/aead/chacha20-poly1305/xchacha20-poly1305_construction
 [argon2id]: https://github.com/p-h-c/phc-winner-argon2
 [x25519]: https://cr.yp.to/ecdh.html

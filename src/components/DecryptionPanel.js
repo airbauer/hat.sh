@@ -1,66 +1,58 @@
 /* eslint-disable @next/next/no-img-element */
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
-import { useDropzone } from "react-dropzone";
-import { formatBytes } from "../helpers/formatBytes";
-import { formatName } from "../helpers/formatName";
-import {
-  crypto_secretstream_xchacha20poly1305_ABYTES,
-  CHUNK_SIZE,
-} from "../config/Constants";
-import { Alert, AlertTitle } from "@material-ui/lab";
-import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import Stepper from "@material-ui/core/Stepper";
-import Step from "@material-ui/core/Step";
-import StepLabel from "@material-ui/core/StepLabel";
-import StepContent from "@material-ui/core/StepContent";
-import Button from "@material-ui/core/Button";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import TextField from "@material-ui/core/TextField";
-import IconButton from "@material-ui/core/IconButton";
-import Tooltip from "@material-ui/core/Tooltip";
-import Backdrop from "@material-ui/core/Backdrop";
-import Collapse from "@material-ui/core/Collapse";
-import LockOpenIcon from "@material-ui/icons/LockOpen";
-import RefreshIcon from "@material-ui/icons/Refresh";
-import DescriptionIcon from "@material-ui/icons/Description";
-import GetAppIcon from "@material-ui/icons/GetApp";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import AttachFileIcon from "@material-ui/icons/AttachFile";
-import CloseIcon from "@material-ui/icons/Close";
-import AddIcon from "@material-ui/icons/Add";
-import RotateLeftIcon from "@material-ui/icons/RotateLeft";
-import { getTranslations as t } from "../../locales";
-import {
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-} from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { useDropzone } from 'react-dropzone';
+import { formatBytes } from '../helpers/formatBytes';
+import { formatName } from '../helpers/formatName';
+import { crypto_secretstream_xchacha20poly1305_ABYTES, CHUNK_SIZE } from '../config/Constants';
+import { Alert, AlertTitle } from '@material-ui/lab';
+import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
+import StepContent from '@material-ui/core/StepContent';
+import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import TextField from '@material-ui/core/TextField';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Backdrop from '@material-ui/core/Backdrop';
+import Collapse from '@material-ui/core/Collapse';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
+import RefreshIcon from '@material-ui/icons/Refresh';
+import DescriptionIcon from '@material-ui/icons/Description';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
+import CloseIcon from '@material-ui/icons/Close';
+import AddIcon from '@material-ui/icons/Add';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import { getTranslations as t } from '../../locales';
+import { List, ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
+    width: '100%',
   },
   offline: {
     fontSize: 12,
-    float: "right",
+    float: 'right',
     color: theme.palette.diamondBlack.main,
   },
   stepper: {
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
 
   stepIcon: {
-    "&$activeStepIcon": {
+    '&$activeStepIcon': {
       color: theme.palette.emperor.main,
     },
-    "&$completedStepIcon": {
+    '&$completedStepIcon': {
       color: theme.palette.emperor.main,
     },
   },
@@ -70,29 +62,29 @@ const useStyles = makeStyles((theme) => ({
   button: {
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1),
-    borderRadius: "8px",
-    border: "none",
+    borderRadius: '8px',
+    border: 'none',
     color: theme.palette.mineShaft.main,
     backgroundColor: theme.palette.mercury.light,
-    "&:hover": {
+    '&:hover': {
       backgroundColor: theme.palette.mercury.main,
     },
-    transition: "background-color 0.2s ease-out",
+    transition: 'background-color 0.2s ease-out',
   },
 
   browseButton: {
     padding: 8,
     paddingLeft: 15,
     paddingRight: 15,
-    textTransform: "none",
-    borderRadius: "8px",
-    border: "none",
+    textTransform: 'none',
+    borderRadius: '8px',
+    border: 'none',
     color: theme.palette.mineShaft.main,
     backgroundColor: theme.palette.alto.light,
-    "&:hover": {
+    '&:hover': {
       backgroundColor: theme.palette.alto.main,
     },
-    transition: "background-color 0.2s ease-out, color 0.01s",
+    transition: 'background-color 0.2s ease-out, color 0.01s',
   },
 
   resetButton: {
@@ -100,33 +92,33 @@ const useStyles = makeStyles((theme) => ({
     padding: 8,
     paddingLeft: 15,
     paddingRight: 15,
-    textTransform: "none",
-    borderRadius: "8px",
-    border: "none",
+    textTransform: 'none',
+    borderRadius: '8px',
+    border: 'none',
     color: theme.palette.flower.text,
     backgroundColor: theme.palette.flower.main,
-    "&:hover": {
+    '&:hover': {
       backgroundColor: theme.palette.flower.light,
     },
-    transition: "background-color 0.2s ease-out, color 0.01s",
+    transition: 'background-color 0.2s ease-out, color 0.01s',
   },
 
   backButton: {
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1),
-    borderRadius: "8px",
+    borderRadius: '8px',
     backgroundColor: theme.palette.mercury.main,
   },
   nextButton: {
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1),
-    borderRadius: "8px",
+    borderRadius: '8px',
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.white.main,
-    "&:hover": {
+    '&:hover': {
       backgroundColor: theme.palette.mineShaft.main,
     },
-    transition: "color .01s",
+    transition: 'color .01s',
   },
 
   actionsContainer: {
@@ -134,59 +126,59 @@ const useStyles = makeStyles((theme) => ({
   },
   resetContainer: {
     padding: theme.spacing(3),
-    boxShadow: "rgba(149, 157, 165, 0.4) 0px 8px 24px",
-    borderRadius: "8px",
+    boxShadow: 'rgba(149, 157, 165, 0.4) 0px 8px 24px',
+    borderRadius: '8px',
   },
 
   input: {
-    display: "none",
+    display: 'none',
   },
 
   fileArea: {
-    padding: "20px",
-    border: "5px dashed",
+    padding: '20px',
+    border: '5px dashed',
     borderColor: theme.palette.gallery.main,
-    borderRadius: "14px",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
-    marginBottom: "10px",
+    borderRadius: '14px',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    marginBottom: '10px',
   },
 
   filesInfo: {
-    float: "right",
+    float: 'right',
     marginTop: 15,
-    textTransform: "none",
+    textTransform: 'none',
     color: theme.palette.cottonBoll.text,
-    transition: "background-color 0.2s ease-out, color 0.01s",
+    transition: 'background-color 0.2s ease-out, color 0.01s',
   },
 
   filesPaper: {
     marginBottom: 15,
-    overflow: "auto",
-    maxHeight: "280px",
-    backgroundColor: "transparent",
+    overflow: 'auto',
+    maxHeight: '280px',
+    backgroundColor: 'transparent',
   },
 
   filesList: {
-    display: "flex",
-    flex: "1",
-    flexWrap: "wrap",
-    alignContent: "center",
-    justifyContent: "center",
+    display: 'flex',
+    flex: '1',
+    flexWrap: 'wrap',
+    alignContent: 'center',
+    justifyContent: 'center',
   },
 
   filesListItem: {
-    backgroundColor: "#f3f3f3",
-    borderRadius: "8px",
+    backgroundColor: '#f3f3f3',
+    borderRadius: '8px',
     padding: 15,
   },
 
   filesListItemText: {
-    width: "100px",
-    maxWidth: "150px",
-    minHeight: "50px",
-    maxHeight: "50px",
+    width: '100px',
+    maxWidth: '150px',
+    minHeight: '50px',
+    maxHeight: '50px',
   },
 }));
 
@@ -216,7 +208,7 @@ export default function DecryptionPanel() {
 
   const [Password, setPassword] = useState();
 
-  const [decryptionMethod, setDecryptionMethod] = useState("secretKey");
+  const [decryptionMethod, setDecryptionMethod] = useState('secretKey');
 
   const [PublicKey, setPublicKey] = useState();
 
@@ -323,8 +315,7 @@ export default function DecryptionPanel() {
       files = files.concat(selectedFiles);
       files = files.filter(
         (thing, index, self) =>
-          index ===
-          self.findIndex((t) => t.name === thing.name && t.size === thing.size)
+          index === self.findIndex((t) => t.name === thing.name && t.size === thing.size),
       );
     } else {
       files = selectedFiles;
@@ -363,7 +354,7 @@ export default function DecryptionPanel() {
         file.slice(0, 22).arrayBuffer(), //v1 signature
       ]).then(([signature, legacy]) => {
         reg.active.postMessage({
-          cmd: "checkFile",
+          cmd: 'checkFile',
           signature,
           legacy,
         });
@@ -420,7 +411,7 @@ export default function DecryptionPanel() {
   };
 
   const testDecryption = (file) => {
-    if (decryptionMethodState === "secretKey") {
+    if (decryptionMethodState === 'secretKey') {
       navigator.serviceWorker.ready.then((reg) => {
         setIsTestingPassword(true);
         setWrongPassword(false);
@@ -430,15 +421,12 @@ export default function DecryptionPanel() {
           file.slice(11, 27).arrayBuffer(), //salt
           file.slice(27, 51).arrayBuffer(), //header
           file
-            .slice(
-              51,
-              51 + CHUNK_SIZE + crypto_secretstream_xchacha20poly1305_ABYTES
-            )
+            .slice(51, 51 + CHUNK_SIZE + crypto_secretstream_xchacha20poly1305_ABYTES)
             .arrayBuffer(), //17
         ]).then(([signature, salt, header, chunk]) => {
           decFileBuff = chunk; //for testing the dec password
           reg.active.postMessage({
-            cmd: "requestTestDecryption",
+            cmd: 'requestTestDecryption',
             password,
             signature,
             salt,
@@ -449,27 +437,24 @@ export default function DecryptionPanel() {
       });
     }
 
-    if (decryptionMethodState === "publicKey") {
+    if (decryptionMethodState === 'publicKey') {
       navigator.serviceWorker.ready.then((reg) => {
         setIsTestingKeys(true);
         setKeysError(false);
         setWrongPrivateKey(false);
         setWrongPublicKey(false);
 
-        let mode = "test";
+        let mode = 'test';
 
         Promise.all([
           file.slice(11, 35).arrayBuffer(), //header
           file
-            .slice(
-              35,
-              35 + CHUNK_SIZE + crypto_secretstream_xchacha20poly1305_ABYTES
-            )
+            .slice(35, 35 + CHUNK_SIZE + crypto_secretstream_xchacha20poly1305_ABYTES)
             .arrayBuffer(), //17
         ]).then(([header, chunk]) => {
           decFileBuff = chunk;
           reg.active.postMessage({
-            cmd: "requestDecKeyPair",
+            cmd: 'requestDecKeyPair',
             privateKey,
             publicKey,
             header,
@@ -530,31 +515,28 @@ export default function DecryptionPanel() {
     // send file name to sw
     let fileName = encodeURIComponent(formatName(files[currFile].name));
     navigator.serviceWorker.ready.then((reg) => {
-      reg.active.postMessage({ cmd: "prepareFileNameDec", fileName });
+      reg.active.postMessage({ cmd: 'prepareFileNameDec', fileName });
     });
   };
 
   const kickOffDecryption = async (e) => {
     if (currFile <= numberOfFiles - 1) {
       file = files[currFile];
-      window.open(`file`, "_self");
+      window.open(`file`, '_self');
       setIsDownloading(true);
 
-      if (decryptionMethodState === "secretKey") {
+      if (decryptionMethodState === 'secretKey') {
         navigator.serviceWorker.ready.then((reg) => {
           Promise.all([
             file.slice(0, 11).arrayBuffer(), //signature
             file.slice(11, 27).arrayBuffer(), //salt
             file.slice(27, 51).arrayBuffer(), //header
             file
-              .slice(
-                51,
-                51 + CHUNK_SIZE + crypto_secretstream_xchacha20poly1305_ABYTES
-              )
+              .slice(51, 51 + CHUNK_SIZE + crypto_secretstream_xchacha20poly1305_ABYTES)
               .arrayBuffer(), //17
           ]).then(([signature, salt, header, chunk]) => {
             reg.active.postMessage({
-              cmd: "requestDecryption",
+              cmd: 'requestDecryption',
               password,
               signature,
               salt,
@@ -564,22 +546,19 @@ export default function DecryptionPanel() {
         });
       }
 
-      if (decryptionMethodState === "publicKey") {
+      if (decryptionMethodState === 'publicKey') {
         navigator.serviceWorker.ready.then((reg) => {
-          let mode = "derive";
+          let mode = 'derive';
 
           Promise.all([
             file.slice(11, 35).arrayBuffer(), //header
             file
-              .slice(
-                35,
-                35 + CHUNK_SIZE + crypto_secretstream_xchacha20poly1305_ABYTES
-              )
+              .slice(35, 35 + CHUNK_SIZE + crypto_secretstream_xchacha20poly1305_ABYTES)
               .arrayBuffer(), //17
           ]).then(([header, chunk]) => {
             decFileBuff = chunk;
             reg.active.postMessage({
-              cmd: "requestDecKeyPair",
+              cmd: 'requestDecKeyPair',
               privateKey,
               publicKey,
               header,
@@ -596,27 +575,20 @@ export default function DecryptionPanel() {
 
   const startDecryption = (method) => {
     let startIndex;
-    if (method === "secretKey") startIndex = 51;
-    if (method === "publicKey") startIndex = 35;
+    if (method === 'secretKey') startIndex = 51;
+    if (method === 'publicKey') startIndex = 35;
 
     file = files[currFile];
 
     navigator.serviceWorker.ready.then((reg) => {
       file
-        .slice(
-          startIndex,
-          startIndex + CHUNK_SIZE + crypto_secretstream_xchacha20poly1305_ABYTES
-        )
+        .slice(startIndex, startIndex + CHUNK_SIZE + crypto_secretstream_xchacha20poly1305_ABYTES)
         .arrayBuffer()
         .then((chunk) => {
-          index =
-            startIndex +
-            CHUNK_SIZE +
-            crypto_secretstream_xchacha20poly1305_ABYTES;
-          reg.active.postMessage(
-            { cmd: "decryptFirstChunk", chunk, last: index >= file.size },
-            [chunk]
-          ); // transfer chunk ArrayBuffer to service worker
+          index = startIndex + CHUNK_SIZE + crypto_secretstream_xchacha20poly1305_ABYTES;
+          reg.active.postMessage({ cmd: 'decryptFirstChunk', chunk, last: index >= file.size }, [
+            chunk,
+          ]); // transfer chunk ArrayBuffer to service worker
         });
     });
   };
@@ -626,35 +598,31 @@ export default function DecryptionPanel() {
 
     navigator.serviceWorker.ready.then((reg) => {
       file
-        .slice(
-          index,
-          index + CHUNK_SIZE + crypto_secretstream_xchacha20poly1305_ABYTES
-        )
+        .slice(index, index + CHUNK_SIZE + crypto_secretstream_xchacha20poly1305_ABYTES)
         .arrayBuffer()
         .then((chunk) => {
           index += CHUNK_SIZE + crypto_secretstream_xchacha20poly1305_ABYTES;
-          e.source.postMessage(
-            { cmd: "decryptRestOfChunks", chunk, last: index >= file.size },
-            [chunk]
-          );
+          e.source.postMessage({ cmd: 'decryptRestOfChunks', chunk, last: index >= file.size }, [
+            chunk,
+          ]);
         });
     });
   };
 
   useEffect(() => {
-    if (query.tab === "decryption" && query.publicKey) {
+    if (query.tab === 'decryption' && query.publicKey) {
       setPublicKey(query.publicKey);
       publicKey = query.publicKey;
       setPkAlert(true);
-      setDecryptionMethod("publicKey");
-      decryptionMethodState = "publicKey";
+      setDecryptionMethod('publicKey');
+      decryptionMethodState = 'publicKey';
     }
   }, [query.publicKey, query.tab]);
 
   useEffect(() => {
-    navigator.serviceWorker.addEventListener("message", (e) => {
+    navigator.serviceWorker.addEventListener('message', (e) => {
       switch (e.data.reply) {
-        case "badFile":
+        case 'badFile':
           if (numberOfFiles > 1) {
             setbadFile(files[currFile].name);
             setIsCheckingFile(false);
@@ -664,7 +632,7 @@ export default function DecryptionPanel() {
           }
           break;
 
-        case "oldVersion":
+        case 'oldVersion':
           if (numberOfFiles > 1) {
             setOldVersion(files[currFile].name);
             setIsCheckingFile(false);
@@ -674,88 +642,82 @@ export default function DecryptionPanel() {
           }
           break;
 
-        case "secretKeyEncryption":
+        case 'secretKeyEncryption':
           if (numberOfFiles > 1) {
-            if (
-              decryptionMethodState &&
-              decryptionMethodState !== "secretKey"
-            ) {
+            if (decryptionMethodState && decryptionMethodState !== 'secretKey') {
               checkFileMixUp();
               return;
             } else {
-              decryptionMethodState = "secretKey";
-              setDecryptionMethod("secretKey");
+              decryptionMethodState = 'secretKey';
+              setDecryptionMethod('secretKey');
               checkFilesQueue();
             }
           } else {
-            setDecryptionMethod("secretKey");
-            decryptionMethodState = "secretKey";
+            setDecryptionMethod('secretKey');
+            decryptionMethodState = 'secretKey';
             setActiveStep(1);
             setIsCheckingFile(false);
             resetCurrFile();
           }
           break;
 
-        case "publicKeyEncryption":
+        case 'publicKeyEncryption':
           if (numberOfFiles > 1) {
-            if (
-              decryptionMethodState &&
-              decryptionMethodState !== "publicKey"
-            ) {
+            if (decryptionMethodState && decryptionMethodState !== 'publicKey') {
               checkFileMixUp();
               return;
             } else {
-              decryptionMethodState = "publicKey";
-              setDecryptionMethod("publicKey");
+              decryptionMethodState = 'publicKey';
+              setDecryptionMethod('publicKey');
               checkFilesQueue();
             }
           } else {
-            setDecryptionMethod("publicKey");
-            decryptionMethodState = "publicKey";
+            setDecryptionMethod('publicKey');
+            decryptionMethodState = 'publicKey';
             setActiveStep(1);
             setIsCheckingFile(false);
             resetCurrFile();
           }
           break;
 
-        case "wrongDecPrivateKey":
+        case 'wrongDecPrivateKey':
           setWrongPrivateKey(true);
           setIsTestingKeys(false);
           break;
 
-        case "wrongDecPublicKey":
+        case 'wrongDecPublicKey':
           setWrongPublicKey(true);
           setIsTestingKeys(false);
           break;
 
-        case "wrongDecKeys":
+        case 'wrongDecKeys':
           setWrongPublicKey(true);
           setWrongPrivateKey(true);
           setIsTestingKeys(false);
           break;
 
-        case "wrongDecKeyPair":
+        case 'wrongDecKeyPair':
           setKeysError(true);
-          setKeysErrorMessage(t("invalid_key_pair"));
+          setKeysErrorMessage(t('invalid_key_pair'));
           setIsTestingKeys(false);
           break;
 
-        case "wrongDecKeyInput":
+        case 'wrongDecKeyInput':
           setKeysError(true);
-          setKeysErrorMessage(t("invalid_keys_input"));
+          setKeysErrorMessage(t('invalid_keys_input'));
           setIsTestingKeys(false);
           break;
 
-        case "wrongPassword":
+        case 'wrongPassword':
           setWrongPassword(true);
           setIsTestingPassword(false);
           break;
 
-        case "filePreparedDec":
+        case 'filePreparedDec':
           kickOffDecryption();
           break;
 
-        case "readyToDecrypt":
+        case 'readyToDecrypt':
           if (numberOfFiles > 1) {
             checkFilesTestQueue();
           } else {
@@ -766,19 +728,19 @@ export default function DecryptionPanel() {
           }
           break;
 
-        case "decKeyPairGenerated":
-          startDecryption("publicKey");
+        case 'decKeyPairGenerated':
+          startDecryption('publicKey');
           break;
 
-        case "decKeysGenerated":
-          startDecryption("secretKey");
+        case 'decKeysGenerated':
+          startDecryption('secretKey');
           break;
 
-        case "continueDecryption":
+        case 'continueDecryption':
           continueDecryption(e);
           break;
 
-        case "decryptionFinished":
+        case 'decryptionFinished':
           if (numberOfFiles > 1) {
             updateCurrFile();
             file = null;
@@ -804,19 +766,10 @@ export default function DecryptionPanel() {
   return (
     <div className={classes.root} {...getRootProps()}>
       <Backdrop open={isDragActive} style={{ zIndex: 10 }}>
-        <Typography
-          variant="h2"
-          gutterBottom
-          style={{ color: "#fff", textAlign: "center" }}
-        >
-          <img
-            src="/assets/images/logo2.png"
-            width="100"
-            height="100"
-            alt="hat.sh logo"
-          />
+        <Typography variant="h2" gutterBottom style={{ color: '#fff', textAlign: 'center' }}>
+          <img src="/assets/images/logo2.png" width="100" height="100" alt="hat.sh logo" />
           <br />
-          {t("drop_file_dec")}
+          {t('drop_file_dec')}
         </Typography>
       </Backdrop>
 
@@ -836,15 +789,11 @@ export default function DecryptionPanel() {
             </IconButton>
           }
         >
-          {t("sender_key_loaded")}
+          {t('sender_key_loaded')}
         </Alert>
       </Collapse>
 
-      <Stepper
-        activeStep={activeStep}
-        orientation="vertical"
-        className={classes.stepper}
-      >
+      <Stepper activeStep={activeStep} orientation="vertical" className={classes.stepper}>
         <Step key={1}>
           <StepLabel
             StepIconProps={{
@@ -855,23 +804,20 @@ export default function DecryptionPanel() {
               },
             }}
           >
-            {t("choose_files_dec")}
+            {t('choose_files_dec')}
           </StepLabel>
           <StepContent>
             <div className="wrapper p-3" id="decFileWrapper">
               <div
                 className={classes.fileArea}
                 id="decFileArea"
-                style={{ display: Files.length > 0 ? "" : "flex" }}
+                style={{ display: Files.length > 0 ? '' : 'flex' }}
               >
                 <Paper elevation={0} className={classes.filesPaper}>
                   <List dense={true} className={classes.filesList}>
                     {Files.length > 0
                       ? Files.map((file, index) => (
-                          <ListItem
-                            key={index}
-                            className={classes.filesListItem}
-                          >
+                          <ListItem key={index} className={classes.filesListItem}>
                             <ListItemText
                               className={classes.filesListItemText}
                               primary={file.name}
@@ -889,7 +835,7 @@ export default function DecryptionPanel() {
                             </ListItemSecondaryAction>
                           </ListItem>
                         ))
-                      : t("drag_drop_files")}
+                      : t('drag_drop_files')}
                   </List>
                 </Paper>
 
@@ -905,11 +851,9 @@ export default function DecryptionPanel() {
                   <Button
                     className={classes.browseButton}
                     component="span"
-                    startIcon={
-                      Files.length > 0 ? <AddIcon /> : <DescriptionIcon />
-                    }
+                    startIcon={Files.length > 0 ? <AddIcon /> : <DescriptionIcon />}
                   >
-                    {Files.length > 0 ? t("add_files") : t("browse_files")}
+                    {Files.length > 0 ? t('add_files') : t('browse_files')}
                   </Button>
                 </label>
 
@@ -921,11 +865,11 @@ export default function DecryptionPanel() {
                       component="span"
                       startIcon={<RotateLeftIcon />}
                     >
-                      {t("reset")}
+                      {t('reset')}
                     </Button>
 
                     <small className={classes.filesInfo}>
-                      {Files.length} {Files.length > 1 ? t("files") : t("file")}
+                      {Files.length} {Files.length > 1 ? t('files') : t('file')}
                     </small>
                   </>
                 )}
@@ -941,48 +885,43 @@ export default function DecryptionPanel() {
                   className={`${classes.nextButton} nextBtnHs submitFileDec`}
                   startIcon={
                     isCheckingFile && (
-                      <CircularProgress
-                        size={24}
-                        className={classes.buttonProgress}
-                      />
+                      <CircularProgress size={24} className={classes.buttonProgress} />
                     )
                   }
                   fullWidth
                 >
-                  {isCheckingFile ? t("checking_file") : t("next")}
+                  {isCheckingFile ? t('checking_file') : t('next')}
                 </Button>
               </div>
 
               {badFile && (
                 <Alert severity="error" style={{ marginTop: 15 }}>
-                  {t("file_not_encrypted_corrupted")}
+                  {t('file_not_encrypted_corrupted')}
                   <br />
-                  {Files.length > 1 ? <strong>{badFile}</strong> : ""}
+                  {Files.length > 1 ? <strong>{badFile}</strong> : ''}
                 </Alert>
               )}
 
               {oldVersion && (
                 <Alert severity="error" style={{ marginTop: 15 }}>
-                  {t("old_version")}{" "}
+                  {t('old_version')}{' '}
                   <a href="https://v1.hat.sh/" target="_blank" rel="noreferrer">
-                    {"https://v1.hat.sh"}
+                    {'https://v1.hat.sh'}
                   </a>
                   <br />
-                  {Files.length > 1 ? <strong>{oldVersion}</strong> : ""}
+                  {Files.length > 1 ? <strong>{oldVersion}</strong> : ''}
                 </Alert>
               )}
 
               {fileMixUp && (
                 <Alert severity="error" style={{ marginTop: 15 }}>
-                  {t("file_mixup")}
+                  {t('file_mixup')}
                 </Alert>
               )}
             </div>
 
             {!badFile && !oldVersion && !fileMixUp && (
-              <Typography className={classes.offline}>
-                {t("offline_note")}
-              </Typography>
+              <Typography className={classes.offline}>{t('offline_note')}</Typography>
             )}
           </StepContent>
         </Step>
@@ -997,35 +936,27 @@ export default function DecryptionPanel() {
               },
             }}
           >
-            {decryptionMethod === "secretKey"
-              ? t("enter_password_dec")
-              : t("enter_keys_dec")}
+            {decryptionMethod === 'secretKey' ? t('enter_password_dec') : t('enter_keys_dec')}
           </StepLabel>
           <StepContent>
-            {decryptionMethod === "secretKey" && (
+            {decryptionMethod === 'secretKey' && (
               <TextField
                 required
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 error={wrongPassword ? true : false}
-                id={
-                  wrongPassword
-                    ? "outlined-error-helper-text"
-                    : "outlined-required"
-                }
+                id={wrongPassword ? 'outlined-error-helper-text' : 'outlined-required'}
                 className="decPasswordInput"
-                label={wrongPassword ? t("error") : t("required")}
-                helperText={wrongPassword ? t("wrong_password") : ""}
-                placeholder={t("password")}
+                label={wrongPassword ? t('error') : t('required')}
+                helperText={wrongPassword ? t('wrong_password') : ''}
+                placeholder={t('password')}
                 variant="outlined"
-                value={Password ? Password : ""}
+                value={Password ? Password : ''}
                 onChange={(e) => handlePasswordInput(e.target.value)}
                 fullWidth
                 InputProps={{
                   endAdornment: (
-                    <Tooltip title={t("show_password")} placement="left">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
+                    <Tooltip title={t('show_password')} placement="left">
+                      <IconButton onClick={() => setShowPassword(!showPassword)}>
                         {showPassword ? <Visibility /> : <VisibilityOff />}
                       </IconButton>
                     </Tooltip>
@@ -1034,20 +965,20 @@ export default function DecryptionPanel() {
               />
             )}
 
-            {decryptionMethod === "publicKey" && (
+            {decryptionMethod === 'publicKey' && (
               <>
                 <TextField
                   id="public-key-input-dec"
                   required
                   error={wrongPublicKey || keysError ? true : false}
-                  helperText={wrongPublicKey ? t("wrong_public_key") : ""}
-                  label={t("sender_public_key")}
-                  placeholder={t("enter_sender_public_key")}
+                  helperText={wrongPublicKey ? t('wrong_public_key') : ''}
+                  label={t('sender_public_key')}
+                  placeholder={t('enter_sender_public_key')}
                   variant="outlined"
-                  value={PublicKey ? PublicKey : ""}
+                  value={PublicKey ? PublicKey : ''}
                   onChange={(e) => handlePublicKeyInput(e.target.value)}
                   fullWidth
-                  style={{ marginBottom: "15px" }}
+                  style={{ marginBottom: '15px' }}
                   InputProps={{
                     endAdornment: (
                       <>
@@ -1059,14 +990,8 @@ export default function DecryptionPanel() {
                           onChange={(e) => loadPublicKey(e.target.files[0])}
                         />
                         <label htmlFor="dec-public-key-file">
-                          <Tooltip
-                            title={t("load_public_key")}
-                            placement="left"
-                          >
-                            <IconButton
-                              aria-label={t("load_public_key")}
-                              component="span"
-                            >
+                          <Tooltip title={t('load_public_key')} placement="left">
+                            <IconButton aria-label={t('load_public_key')} component="span">
                               <AttachFileIcon />
                             </IconButton>
                           </Tooltip>
@@ -1078,33 +1003,24 @@ export default function DecryptionPanel() {
 
                 <TextField
                   id="private-key-input-dec"
-                  type={showPrivateKey ? "text" : "password"}
+                  type={showPrivateKey ? 'text' : 'password'}
                   required
                   error={wrongPrivateKey || keysError ? true : false}
-                  helperText={wrongPrivateKey ? t("wrong_private_key") : ""}
-                  label={t("your_private_key_dec")}
-                  placeholder={t("enter_private_key_dec")}
+                  helperText={wrongPrivateKey ? t('wrong_private_key') : ''}
+                  label={t('your_private_key_dec')}
+                  placeholder={t('enter_private_key_dec')}
                   variant="outlined"
-                  value={PrivateKey ? PrivateKey : ""}
+                  value={PrivateKey ? PrivateKey : ''}
                   onChange={(e) => handlePrivateKeyInput(e.target.value)}
                   fullWidth
-                  style={{ marginBottom: "15px" }}
+                  style={{ marginBottom: '15px' }}
                   InputProps={{
                     endAdornment: (
                       <>
                         {PrivateKey && (
-                          <Tooltip
-                            title={t("show_private_key")}
-                            placement="left"
-                          >
-                            <IconButton
-                              onClick={() => setShowPrivateKey(!showPrivateKey)}
-                            >
-                              {showPrivateKey ? (
-                                <Visibility />
-                              ) : (
-                                <VisibilityOff />
-                              )}
+                          <Tooltip title={t('show_private_key')} placement="left">
+                            <IconButton onClick={() => setShowPrivateKey(!showPrivateKey)}>
+                              {showPrivateKey ? <Visibility /> : <VisibilityOff />}
                             </IconButton>
                           </Tooltip>
                         )}
@@ -1117,14 +1033,8 @@ export default function DecryptionPanel() {
                           onChange={(e) => loadPrivateKey(e.target.files[0])}
                         />
                         <label htmlFor="dec-private-key-file">
-                          <Tooltip
-                            title={t("load_private_key")}
-                            placement="left"
-                          >
-                            <IconButton
-                              aria-label={t("load_private_key")}
-                              component="span"
-                            >
+                          <Tooltip title={t('load_private_key')} placement="left">
+                            <IconButton aria-label={t('load_private_key')} component="span">
                               <AttachFileIcon />
                             </IconButton>
                           </Tooltip>
@@ -1141,22 +1051,19 @@ export default function DecryptionPanel() {
                 <Grid container spacing={1}>
                   <Grid item>
                     <Button
-                      disabled={
-                        activeStep === 0 || isTestingPassword || isTestingKeys
-                      }
+                      disabled={activeStep === 0 || isTestingPassword || isTestingKeys}
                       onClick={handleBack}
                       className={classes.backButton}
                       fullWidth
                     >
-                      {t("back")}
+                      {t('back')}
                     </Button>
                   </Grid>
                   <Grid item xs>
                     <Button
                       disabled={
-                        (decryptionMethod === "secretKey" && !Password) ||
-                        (decryptionMethod === "publicKey" &&
-                          (!PublicKey || !PrivateKey)) ||
+                        (decryptionMethod === 'secretKey' && !Password) ||
+                        (decryptionMethod === 'publicKey' && (!PublicKey || !PrivateKey)) ||
                         isTestingPassword ||
                         isTestingKeys
                       }
@@ -1165,51 +1072,42 @@ export default function DecryptionPanel() {
                       className={`${classes.nextButton} nextBtnHs submitKeysDec`}
                       startIcon={
                         (isTestingPassword || isTestingKeys) && (
-                          <CircularProgress
-                            size={24}
-                            className={classes.buttonProgress}
-                          />
+                          <CircularProgress size={24} className={classes.buttonProgress} />
                         )
                       }
                       fullWidth
                     >
                       {isTestingPassword
-                        ? `${currFileState + 1}/${numberOfFiles} ${t(
-                            "testing_password"
-                          )}`
+                        ? `${currFileState + 1}/${numberOfFiles} ${t('testing_password')}`
                         : isTestingKeys
-                        ? `${currFileState + 1}/${numberOfFiles} ${t(
-                            "testing_keys"
-                          )}`
-                        : t("next")}
+                          ? `${currFileState + 1}/${numberOfFiles} ${t('testing_keys')}`
+                          : t('next')}
                     </Button>
                   </Grid>
                 </Grid>
                 <br />
 
-                {decryptionMethod === "secretKey" &&
+                {decryptionMethod === 'secretKey' &&
                   Files.length > 1 &&
                   wrongPassword &&
                   !isTestingPassword && (
                     <Alert severity="error">
-                      <strong>{Files[currFile].name}</strong>{" "}
-                      {t("file_has_wrong_password")}
+                      <strong>{Files[currFile].name}</strong> {t('file_has_wrong_password')}
                     </Alert>
                   )}
 
-                {decryptionMethod === "publicKey" && keysError && (
+                {decryptionMethod === 'publicKey' && keysError && (
                   <Alert severity="error">{keysErrorMessage}</Alert>
                 )}
 
-                {decryptionMethod === "publicKey" &&
+                {decryptionMethod === 'publicKey' &&
                   (wrongPrivateKey || wrongPublicKey) &&
                   !isTestingKeys &&
                   !keysError && (
                     <>
                       {Files.length > 1 && (
                         <Alert severity="error">
-                          <strong>{Files[currFile].name}</strong>{" "}
-                          {t("file_has_wrong_keys")}
+                          <strong>{Files[currFile].name}</strong> {t('file_has_wrong_keys')}
                         </Alert>
                       )}
                     </>
@@ -1229,18 +1127,14 @@ export default function DecryptionPanel() {
               },
             }}
           >
-            {t("download_decrypted_files")}
+            {t('download_decrypted_files')}
           </StepLabel>
 
           <StepContent>
             {Files.length > 0 && (
               <Alert severity="success" icon={<LockOpenIcon />}>
-                <strong>
-                  {Files.length > 1 ? Files.length : Files[0].name}
-                </strong>{" "}
-                {Files.length > 1
-                  ? t("files_ready_to_download")
-                  : t("ready_to_download")}
+                <strong>{Files.length > 1 ? Files.length : Files[0].name}</strong>{' '}
+                {Files.length > 1 ? t('files_ready_to_download') : t('ready_to_download')}
               </Alert>
             )}
 
@@ -1252,7 +1146,7 @@ export default function DecryptionPanel() {
                     onClick={handleBack}
                     className={classes.backButton}
                   >
-                    {t("back")}
+                    {t('back')}
                   </Button>
                 </Grid>
                 <Grid item xs>
@@ -1267,10 +1161,7 @@ export default function DecryptionPanel() {
                     className={`${classes.nextButton} nextBtnHs`}
                     startIcon={
                       isDownloading ? (
-                        <CircularProgress
-                          size={24}
-                          className={classes.buttonProgress}
-                        />
+                        <CircularProgress size={24} className={classes.buttonProgress} />
                       ) : (
                         <GetAppIcon />
                       )
@@ -1281,15 +1172,13 @@ export default function DecryptionPanel() {
                       onClick={(e) => handleEncryptedFilesDownload(e)}
                       className="downloadFileDec"
                       style={{
-                        width: "100%",
-                        textDecoration: "none",
+                        width: '100%',
+                        textDecoration: 'none',
                       }}
                     >
                       {isDownloading
-                        ? `${currFileState + 1}/${numberOfFiles} ${t(
-                            "downloading_file"
-                          )}`
-                        : t("decrypted_files")}
+                        ? `${currFileState + 1}/${numberOfFiles} ${t('downloading_file')}`
+                        : t('decrypted_files')}
                     </a>
                   </Button>
                 </Grid>
@@ -1298,7 +1187,7 @@ export default function DecryptionPanel() {
 
               {isDownloading && (
                 <Alert variant="outlined" severity="info">
-                  {t("page_close_alert")}
+                  {t('page_close_alert')}
                 </Alert>
               )}
             </div>
@@ -1307,13 +1196,9 @@ export default function DecryptionPanel() {
       </Stepper>
       {activeStep === 3 && (
         <Paper elevation={1} className={classes.resetContainer}>
-          <Alert
-            variant="outlined"
-            severity="success"
-            style={{ border: "none" }}
-          >
-            <AlertTitle>{t("success")}</AlertTitle>
-            {t("success_downloaded_files_dec")}
+          <Alert variant="outlined" severity="success" style={{ border: 'none' }}>
+            <AlertTitle>{t('success')}</AlertTitle>
+            {t('success_downloaded_files_dec')}
           </Alert>
 
           <Button
@@ -1322,9 +1207,9 @@ export default function DecryptionPanel() {
             variant="outlined"
             startIcon={<RefreshIcon />}
             fullWidth
-            style={{ textTransform: "none" }}
+            style={{ textTransform: 'none' }}
           >
-            {t("decrypt_other_files")}
+            {t('decrypt_other_files')}
           </Button>
         </Paper>
       )}
