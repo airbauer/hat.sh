@@ -2,11 +2,8 @@ version: '3'
 
 services:
   web:
-    image: shdv/hat.sh
     build:
-      context: ./
+      context: .
       dockerfile: Dockerfile
     ports:
-      - 3991:80
-    volumes:
-      - ./src:/usr/share/nginx/html/out
+      - "3991:80"
